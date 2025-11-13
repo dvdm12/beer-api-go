@@ -30,3 +30,4 @@ func (c *CreateController) CreateBeer(ctx *gin.Context) {
 
     ctx.JSON(http.StatusOK, gin.H{"message": "Beer created successfully"})
 }
+    
