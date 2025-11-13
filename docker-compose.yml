@@ -1,0 +1,11 @@
+services:
+  api:
+    image: golang:tip-trixie
+    container_name: parcial_three_api
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: >
+      bash -c "go run ./cmd/main.go"
+    ports:
+      - "8080:8080"
