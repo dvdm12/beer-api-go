@@ -1,11 +1,23 @@
 services:
-  api:
-    image: golang:tip-trixie
-    container_name: parcial_three_api
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: >
-      bash -c "go run ./cmd/main.go"
+  mongodb:
+    image: mongo
+    container_name: beers_mongo
     ports:
-      - "8080:8080"
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  create-service:
+    build: ./create-service
+    container_name: create_service
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+      - DATABASE=beersdb
+      - COLLECTION=beers
+    ports:
+      - "8001:8080"
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo_data:
