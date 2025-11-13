@@ -6,10 +6,10 @@ import (
 )
 
 type CreateService struct {
-    repo *repository.CreateRepository
+    repo repository.CreateRepositoryInterface
 }
 
-func NewCreateService(repo *repository.CreateRepository) *CreateService {
+func NewCreateService(repo repository.CreateRepositoryInterface) *CreateService {
     return &CreateService{repo: repo}
 }
 

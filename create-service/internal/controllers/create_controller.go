@@ -8,10 +8,10 @@ import (
 )
 
 type CreateController struct {
-    service *services.CreateService
+    service services.CreateServiceInterface
 }
 
-func NewCreateController(service *services.CreateService) *CreateController {
+func NewCreateController(service services.CreateServiceInterface) *CreateController {
     return &CreateController{service: service}
 }
 
@@ -23,8 +23,7 @@ func (c *CreateController) CreateBeer(ctx *gin.Context) {
         return
     }
 
-    err := c.service.CreateBeer(beer)
-    if err != nil {
+    if err := c.service.CreateBeer(beer); err != nil {
         ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create beer"})
         return
     }

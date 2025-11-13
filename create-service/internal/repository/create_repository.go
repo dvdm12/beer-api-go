@@ -2,29 +2,25 @@ package repository
 
 import (
     "context"
-    "os"
-    "time"
-
+    "createservice/internal/db"
     "createservice/internal/models"
-    "go.mongodb.org/mongo-driver/mongo"
+    "time"
 )
 
 type CreateRepository struct {
-    collection *mongo.Collection
+    collection db.MongoCollectionInterface
 }
 
-func NewCreateRepository(client *mongo.Client) *CreateRepository {
-    database := os.Getenv("DATABASE")
-    collection := os.Getenv("COLLECTION")
-
+func NewCreateRepository(collection db.MongoCollectionInterface) *CreateRepository {
     return &CreateRepository{
-        collection: client.Database(database).Collection(collection),
+        collection: collection,
     }
 }
 
-func (r *CreateRepository) CreateBeer(beer models.Beer) (*mongo.InsertOneResult, error) {
+func (r *CreateRepository) CreateBeer(beer models.Beer) (*struct{}, error) {
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
 
-    return r.collection.InsertOne(ctx, beer)
+    _, err := r.collection.InsertOne(ctx, beer)
+    return nil, err
 }

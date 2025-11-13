@@ -9,14 +9,16 @@ import (
 )
 
 func main() {
-    router := gin.Default()
 
-    client := db.Connect()
-    repo := repository.NewCreateRepository(client)
+    collection := db.Connect()
+
+    repo := repository.NewCreateRepository(collection)
     service := services.NewCreateService(repo)
     controller := controllers.NewCreateController(service)
 
-    router.POST("/beers/create", controller.CreateBeer)
+    r := gin.Default()
 
-    router.Run(":8080")
+    r.POST("/beers/create", controller.CreateBeer)
+
+    r.Run(":8080")
 }
