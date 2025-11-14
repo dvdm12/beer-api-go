@@ -1,2 +1,2 @@
-fmt.Println("pipeline test start||||")
+fmt.Println("pipeline test start|||||")
 
