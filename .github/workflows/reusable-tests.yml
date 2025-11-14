@@ -15,6 +15,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Restore Go modules cache
+        uses: actions/cache@v4
+        with:
+          path: ~/go/pkg/mod
+          key: go-${{ hashFiles('${{ inputs.working-directory }}/go.sum') }}
+          restore-keys: go-
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
@@ -26,8 +33,14 @@ jobs:
           cd ${{ inputs.working-directory }}
           go mod tidy
 
-      - name: Run unit & integration tests
+      - name: Run unit & integration tests + Coverage
         run: |
           set -e
           cd ${{ inputs.working-directory }}
-          go test ./... -v
+          go test ./... -v -coverprofile=coverage.out
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ inputs.working-directory }}
+          path: ${{ inputs.working-directory }}/coverage.out
