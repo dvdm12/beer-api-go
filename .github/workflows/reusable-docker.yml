@@ -12,6 +12,11 @@ on:
       image-name:
         required: true
         type: string
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
 
 jobs:
   docker:
@@ -50,7 +55,7 @@ jobs:
             ghcr.io/${{ github.repository }}/${{ inputs.image-name }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}
 
-      # --- Build image ---
+      # --- Build (No Push) ---
       - name: Build image
         uses: docker/build-push-action@v5
         with:
@@ -60,7 +65,7 @@ jobs:
           push: false
           tags: ${{ steps.meta.outputs.tags }}
 
-      # --- TRIVY SCAN ---
+      # --- Trivy Scan ---
       - name: Trivy Security Scan
         uses: aquasecurity/trivy-action@0.22.0
         with:
