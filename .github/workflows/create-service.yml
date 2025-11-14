@@ -2,14 +2,19 @@ name: Create-Service CI/CD
 
 on:
   push:
+    branches:
+      - main
+      - develop
     paths:
       - "create-service/**"
-  pull_request:
-    paths:
-      - "create-service/**"
-  push:
     tags:
       - "v*.*.*"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "create-service/**"
 
 jobs:
   tests:
