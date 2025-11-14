@@ -47,7 +47,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # --- Metadata ---
-      - name: Extract image metadata
+      - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -55,27 +55,33 @@ jobs:
             ghcr.io/${{ github.repository }}/${{ inputs.image-name }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}
 
-      # --- Build (No Push) ---
-      - name: Build image
+      # ------------------------------------------------------------------
+      # --- Build local image (amd64 only) for Trivy Scan ---
+      # ------------------------------------------------------------------
+      - name: Build local amd64 image for Trivy
         uses: docker/build-push-action@v5
         with:
           context: ${{ inputs.context }}
           file: ${{ inputs.dockerfile }}
-          platforms: linux/amd64,linux/arm64
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
+          platforms: linux/amd64
+          load: true                             # <-- Necesario para que Trivy la encuentre
+          tags: local-scan-image                 # <-- Imagen temporal SOLO para el scan
 
-      # --- Trivy Scan ---
+      # ------------------------------------------------------------------
+      # --- Trivy Scan using local image ---
+      # ------------------------------------------------------------------
       - name: Trivy Security Scan
         uses: aquasecurity/trivy-action@0.22.0
         with:
-          image-ref: ${{ fromJson(steps.meta.outputs.json).tags[0] }}
+          image-ref: local-scan-image            # <-- Se escanea la imagen local
           format: table
           exit-code: 1
           ignore-unfixed: true
 
-      # --- Final Push ---
-      - name: Push image to registries
+      # ------------------------------------------------------------------
+      # --- Multi-Arch Final Build & Push ---
+      # ------------------------------------------------------------------
+      - name: Build and Push Multi-Arch Image
         uses: docker/build-push-action@v5
         with:
           context: ${{ inputs.context }}
@@ -83,3 +89,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
