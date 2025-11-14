@@ -39,8 +39,16 @@ jobs:
           cd ${{ inputs.working-directory }}
           go test ./... -v -coverprofile=coverage.out
 
-      - name: Upload coverage report
+      - name: Generate HTML coverage report
+        run: |
+          set -e
+          cd ${{ inputs.working-directory }}
+          go tool cover -html=coverage.out -o coverage.html
+
+      - name: Upload coverage artifacts (out + html)
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ inputs.working-directory }}
-          path: ${{ inputs.working-directory }}/coverage.out
+          path: |
+            ${{ inputs.working-directory }}/coverage.out
+            ${{ inputs.working-directory }}/coverage.html
