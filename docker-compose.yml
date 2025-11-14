@@ -7,17 +7,26 @@ services:
     volumes:
       - mongo_data:/data/db
 
+    healthcheck:
+      test: [ "CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
   create-service:
     build: ./create-service
     container_name: create_service
     environment:
-      - MONGO_URI=mongodb://mongodb:27017
-      - DATABASE=beersdb
-      - COLLECTION=beers
+      - MONGO_URI=${MONGO_URI}
+      - DATABASE=${DATABASE}
+      - COLLECTION=${COLLECTION}
     ports:
       - "8001:8080"
+
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
 
 volumes:
   mongo_data:

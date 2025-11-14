@@ -36,7 +36,7 @@ func TestMongoCollectionAdapter_InsertOne_Success(t *testing.T) {
 	_, err := adapter.InsertOne(context.Background(), map[string]string{"test": "demo"})
 
 	assert.Nil(t, err)
-	assert.True(t, mock.called)
+	assert.True(t, mock.called)		
 }
 
 func TestMongoCollectionAdapter_InsertOne_Error(t *testing.T) {
