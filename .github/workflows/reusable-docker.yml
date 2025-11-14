@@ -69,7 +69,7 @@ jobs:
       - name: Trivy Security Scan
         uses: aquasecurity/trivy-action@0.22.0
         with:
-          image-ref: ${{ steps.meta.outputs.tags }}
+          image-ref: ${{ fromJson(steps.meta.outputs.json).tags[0] }}
           format: table
           exit-code: 1
           ignore-unfixed: true
