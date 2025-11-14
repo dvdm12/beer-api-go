@@ -50,7 +50,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/${{ github.actor }}/${{ inputs.image-name }}
+            ghcr.io/${{ github.repository }}/${{ inputs.image-name }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}
 
       - name: Build local amd64 image for Trivy
