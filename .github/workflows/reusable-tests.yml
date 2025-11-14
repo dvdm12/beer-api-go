@@ -18,12 +18,16 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: tip
 
       - name: Install dependencies
-        run: go mod tidy
-        working-directory: ${{ inputs.working-directory }}
+        run: |
+          set -e
+          cd ${{ inputs.working-directory }}
+          go mod tidy
 
       - name: Run unit & integration tests
-        run: go test ./... -v
-        working-directory: ${{ inputs.working-directory }}
+        run: |
+          set -e
+          cd ${{ inputs.working-directory }}
+          go test ./... -v
