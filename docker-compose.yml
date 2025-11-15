@@ -22,7 +22,21 @@ services:
       - DATABASE=${DATABASE}
       - COLLECTION=${COLLECTION}
     ports:
-      - "8001:8080"
+      - "8080:8080"
+
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  update-service:
+    build: ./update-service
+    container_name: update_service
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - DATABASE=${DATABASE}
+      - COLLECTION=${COLLECTION}
+    ports:
+      - "8082:8082"
 
     depends_on:
       mongodb:
