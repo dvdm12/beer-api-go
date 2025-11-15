@@ -19,7 +19,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/go/pkg/mod
-          key: go-${{ hashFiles(inputs.working-directory + '/go.sum') }}
+          key: go-${{ hashFiles('${{ inputs.working-directory }}/go.sum') }}
           restore-keys: go-
 
       - name: Setup Go
@@ -29,19 +29,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          set -e
           cd ${{ inputs.working-directory }}
           go mod tidy
 
       - name: Run unit & integration tests + Coverage
         run: |
-          set -e
           cd ${{ inputs.working-directory }}
           go test ./... -v -coverprofile=coverage.out
 
       - name: Generate HTML coverage report
         run: |
-          set -e
           cd ${{ inputs.working-directory }}
           go tool cover -html=coverage.out -o coverage.html
 

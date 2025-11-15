@@ -41,7 +41,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to DockerHub
@@ -56,7 +56,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/${{ github.actor }}/${{ inputs.image-name }}
+            ghcr.io/${{ github.repository_owner }}/${{ inputs.image-name }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}
 
       # ---- Build local amd64 image for Trivy ----
