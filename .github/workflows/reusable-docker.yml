@@ -78,6 +78,17 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
 
+      # ---- Export Docker image (local amd64) ----
+      - name: Save Docker image as tar artifact
+        run: |
+          docker save -o image.tar local-scan-image
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-${{ inputs.image-name }}
+          path: image.tar
+
       # ---- Build & Push multi-arch ----
       - name: Build and Push Multi-Arch Image
         uses: docker/build-push-action@v5

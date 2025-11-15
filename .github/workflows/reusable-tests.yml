@@ -19,7 +19,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/go/pkg/mod
-          key: go-${{ hashFiles(format('{0}/go.sum', inputs.working-directory)) }}
+          key: go-${{ hashFiles(inputs.working-directory + '/go.sum') }}
           restore-keys: go-
 
       - name: Setup Go
@@ -45,7 +45,7 @@ jobs:
           cd ${{ inputs.working-directory }}
           go tool cover -html=coverage.out -o coverage.html
 
-      - name: Upload coverage artifacts (out + html)
+      - name: Upload coverage artifacts
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ inputs.working-directory }}
