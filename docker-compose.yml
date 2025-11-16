@@ -28,6 +28,20 @@ services:
       mongodb:
         condition: service_healthy
 
+  read-service:
+    build: ./read-service
+    container_name: read_service
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - DATABASE=${DATABASE}
+      - COLLECTION=${COLLECTION}
+    ports:
+      - "8081:8081"
+
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
   update-service:
     build: ./update-service
     container_name: update_service
