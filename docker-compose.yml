@@ -56,5 +56,19 @@ services:
       mongodb:
         condition: service_healthy
 
+  delete-service:
+    build: ./delete-service
+    container_name: delete_service
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - DATABASE=${DATABASE}
+      - COLLECTION=${COLLECTION}
+    ports:
+      - "8083:8083"
+
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
 volumes:
   mongo_data:
