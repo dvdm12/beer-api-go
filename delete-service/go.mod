@@ -1,4 +1,4 @@
-module createservice
+module deleteservice
 
 go 1.25.4
 

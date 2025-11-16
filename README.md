@@ -50,57 +50,60 @@
 <hr/>
 
 <h2>
-  <i class="fa-solid fa-diagram-project"></i>
-  Arquitectura de microservicios
-</h2>
-
-<p>Servicios principales (hasta el momento):</p>
-
-<ul>
-  <li>
-    <strong>MongoDB</strong> (<code>mongodb</code>):
-    <ul>
-      <li>Base de datos principal del sistema.</li>
-      <li>Se levanta como un contenedor independiente.</li>
-    </ul>
-  </li>
-  <li>
-    <strong>Create Service</strong> (<code>create-service</code>):
-    <ul>
-      <li>Microservicio encargado de <strong>crear</strong> nuevas cervezas.</li>
-      <li>Expone endpoints REST con Go + Gin.</li>
-      <li>Se conecta a MongoDB para almacenar la información.</li>
-    </ul>
-  </li>
-  <li>
-    <strong>Update Service</strong> (<code>update-service</code>):
-    <ul>
-      <li>Microservicio encargado de <strong>actualizar</strong> la información de las cervezas.</li>
-      <li>Compartirá la misma base de datos MongoDB.</li>
-    </ul>
-  </li>
-</ul>
-
-<hr/>
-
-<h2>
   <i class="fa-solid fa-folder-tree"></i>
   Estructura del proyecto
 </h2>
 
 <pre>
-parcial_three_go/
-├── cmd/
-│   └── main.go              # Punto de entrada del servicio
-├── internal/
-│   ├── controllers/         # Controladores HTTP (Gin handlers)
-│   ├── models/              # Modelos y estructuras de datos
-│   ├── routes/              # Definición de rutas
-│   └── services/            # Lógica de negocio
-├── create-service/          # Código del microservicio de creación
-├── update-service/          # Código del microservicio de actualización
+beer-api-go/
+├── create-service/          # Microservicio de creación
+│   ├── cmd/
+│   │   └── main.go          # Punto de entrada del servicio
+│   ├── internal/
+│   │   ├── controllers/     # Controladores HTTP (Gin handlers)
+│   │   ├── db/              # Adaptadores de base de datos
+│   │   ├── models/          # Modelos y estructuras de datos
+│   │   ├── repository/      # Capa de repositorio
+│   │   └── services/        # Lógica de negocio
+│   ├── Dockerfile
+│   └── go.mod
+├── read-service/            # Microservicio de consulta
+│   ├── cmd/
+│   │   └── main.go          # Punto de entrada del servicio
+│   ├── internal/
+│   │   ├── controllers/     # Controladores HTTP (Gin handlers)
+│   │   ├── db/              # Adaptadores de base de datos
+│   │   ├── models/          # Modelos y estructuras de datos
+│   │   ├── repository/      # Capa de repositorio
+│   │   └── services/        # Lógica de negocio
+│   ├── Dockerfile
+│   └── go.mod
+├── update-service/          # Microservicio de actualización
+│   ├── cmd/
+│   │   └── main.go          # Punto de entrada del servicio
+│   ├── internal/
+│   │   ├── controllers/     # Controladores HTTP (Gin handlers)
+│   │   ├── db/              # Adaptadores de base de datos
+│   │   ├── models/          # Modelos y estructuras de datos
+│   │   ├── repository/      # Capa de repositorio
+│   │   └── services/        # Lógica de negocio
+│   ├── Dockerfile
+│   └── go.mod
+├── delete-service/          # Microservicio de eliminación
+│   ├── cmd/
+│   │   └── main.go          # Punto de entrada del servicio
+│   ├── internal/
+│   │   ├── controllers/     # Controladores HTTP (Gin handlers)
+│   │   ├── db/              # Adaptadores de base de datos
+│   │   ├── models/          # Modelos y estructuras de datos
+│   │   ├── repository/      # Capa de repositorio
+│   │   └── services/        # Lógica de negocio
+│   ├── Dockerfile
+│   └── go.mod
 ├── docker-compose.yml       # Orquestación de contenedores
-└── .env                     # Variables de entorno (no versionar en producción)
+├── .env                     # Variables de entorno
+├── .env.example             # Ejemplo de archivo .env
+└── README.md
 </pre>
 
 <hr/>
@@ -114,7 +117,7 @@ parcial_three_go/
   <li><i class="fa-brands fa-docker"></i> <strong>Docker</strong> instalado.</li>
   <li><i class="fa-brands fa-docker"></i> <strong>Docker Compose</strong> instalado.</li>
   <li><i class="fa-brands fa-golang"></i> <strong>Go 1.x</strong> (opcional para desarrollo local sin contenedores).</li>
-  <li><i class="fa-solid fa-key"></i> Acceso al repositorio (Bitbucket / GitHub) por SSH o HTTPS.</li>
+  <li><i class="fa-solid fa-key"></i> Acceso al repositorio (GitHub / Bitbucket) por SSH o HTTPS.</li>
 </ul>
 
 <hr/>
@@ -134,6 +137,7 @@ COLLECTION=beers
 
 <p>
   Estas variables son utilizadas por los microservicios para conectarse a la base de datos MongoDB.
+  <strong>Nota:</strong> El hostname debe coincidir con el nombre del contenedor de MongoDB definido en <code>docker-compose.yml</code> (<code>mongodb</code>).
 </p>
 
 <hr/>
@@ -145,12 +149,14 @@ COLLECTION=beers
 
 <ol>
   <li>
-    <strong>Clonar el repositorio</strong>
-    <pre>git clone git@bitbucket.org:team-development1/beer-api.git
-cd beer-api</pre>
+    <strong>Clonar el repositorio desde GitHub</strong>
+    <pre>git clone https://github.com/dvdm12/beer-api-go.git</pre>
+    <strong>O desde Bitbucket</strong>
+    <pre>git clone git@bitbucket.org:team-development1/beer-api.git</pre>
+    <pre>cd beer-api-go</pre>
   </li>
   <li>
-    <strong>Crear el archivo <code>.env</code></strong> (si no existe) en la raíz del proyecto:
+    <strong>Crear el archivo <code>.env</code></strong> en la raíz del proyecto con el siguiente contenido:
     <pre>
 MONGO_URI=mongodb://mongodb:27017
 DATABASE=beersdb
@@ -160,11 +166,26 @@ COLLECTION=beers
   <li>
     <strong>Levantar los contenedores con Docker Compose</strong>
     <pre>docker compose up -d</pre>
-    <p>Esto iniciará MongoDB y los microservicios (por ejemplo, <code>create-service</code> y <code>update-service</code>).</p>
+    <p>Esto iniciará MongoDB y los microservicios.</p>
   </li>
   <li>
     <strong>Verificar contenedores en ejecución</strong>
     <pre>docker compose ps</pre>
+    <p>Deberías ver cinco contenedores activos:</p>
+    <ul>
+      <li><code>mongodb</code> - Base de datos MongoDB (Puerto 27017)</li>
+      <li><code>create_service</code> - Servicio de creación (Puerto 8080)</li>
+      <li><code>read_service</code> - Servicio de consulta (Puerto 8081)</li>
+      <li><code>update_service</code> - Servicio de actualización (Puerto 8082)</li>
+      <li><code>delete_service</code> - Servicio de eliminación (Puerto 8083)</li>
+    </ul>
+  </li>
+  <li>
+    <strong>Verificar logs de los microservicios</strong>
+    <pre>docker logs create_service
+docker logs read_service
+docker logs update_service
+docker logs delete_service</pre>
   </li>
 </ol>
 
@@ -172,34 +193,76 @@ COLLECTION=beers
 
 <h2>
   <i class="fa-solid fa-plug"></i>
-  Endpoints (ejemplo)
+  Endpoints
 </h2>
 
-<p><strong>Create Service</strong> (ejemplos):</p>
+<p><strong>Create Service</strong> (Puerto 8080):</p>
 
 <ul>
   <li>
     <code>POST /beers</code> – Crear una nueva cerveza.
-  </li>
-  <li>
-    <code>GET /health</code> – Healthcheck del microservicio.
+    <pre>
+curl -X POST http://localhost:8080/beers \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Heineken",
+    "brand": "Heineken",
+    "alcohol": 5.0,
+    "year": 2024
+  }'
+    </pre>
   </li>
 </ul>
 
-<p><strong>Update Service</strong> (ejemplos):</p>
+<p><strong>Read Service</strong> (Puerto 8081):</p>
+
+<ul>
+  <li>
+    <code>GET /beers</code> – Obtener todas las cervezas.
+    <pre>curl http://localhost:8081/beers</pre>
+  </li>
+  <li>
+    <code>GET /beers/:id</code> – Obtener una cerveza específica por ID.
+    <pre>curl http://localhost:8081/beers/BEER_ID</pre>
+  </li>
+</ul>
+
+<p><strong>Update Service</strong> (Puerto 8082):</p>
 
 <ul>
   <li>
     <code>PUT /beers/:id</code> – Actualizar una cerveza existente.
-  </li>
-  <li>
-    <code>GET /health</code> – Healthcheck del microservicio.
+    <pre>
+curl -X PUT http://localhost:8082/beers/BEER_ID \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Heineken Premium",
+    "brand": "Heineken International",
+    "alcohol": 5.2,
+    "year": 2025
+  }'
+    </pre>
   </li>
 </ul>
 
-<p>
-  Los puertos exactos pueden configurarse en el archivo <code>docker-compose.yml</code>.
-</p>
+<p><strong>Delete Service</strong> (Puerto 8083):</p>
+
+<ul>
+  <li>
+    <code>DELETE /beers/:id</code> – Eliminar una cerveza por ID.
+    <pre>curl -X DELETE http://localhost:8083/beers/BEER_ID</pre>
+  </li>
+</ul>
+
+<p><strong>Modelo de datos Beer:</strong></p>
+<pre>
+{
+  "name": string,      // Nombre de la cerveza
+  "brand": string,     // Marca de la cerveza
+  "alcohol": float,    // Contenido de alcohol
+  "year": int          // Año
+}
+</pre>
 
 <hr/>
 
@@ -227,7 +290,7 @@ git push origin feature/nueva-funcionalidad
 </pre>
 
 <ol start="3">
-  <li>Crear Pull Request hacia <code>develop</code> en Bitbucket.</li>
+  <li>Crear Pull Request hacia <code>develop</code> preferiblemente desde GitHub ya que ahí tenemos workflows de CI/CD configurados.</li>
 </ol>
 
 <hr/>
@@ -238,10 +301,33 @@ git push origin feature/nueva-funcionalidad
 </h2>
 
 <ul>
-  <li>Microservicio <strong>create-service</strong> funcional y conectado a MongoDB.</li>
-  <li>Microservicio <strong>update-service</strong> en desarrollo / integración.</li>
-  <li><code>docker-compose.yml</code> configurado para orquestar servicios y base de datos.</li>
+  <li>✅ Microservicio <strong>create-service</strong> (Puerto 8080).</li>
+  <li>✅ Microservicio <strong>read-service</strong> (Puerto 8081).</li>
+  <li>✅ Microservicio <strong>update-service</strong> (Puerto 8082).</li>
+  <li>✅ Microservicio <strong>delete-service</strong> (Puerto 8083).</li>
+  <li>✅ <code>docker-compose.yml</code> configurado para orquestar servicios y base de datos.</li>
+  <li>✅ Tests unitarios implementados para todos los servicios.</li>
+  <li>✅ Arquitectura estandarizada con adaptadores, repositorios, servicios y controladores.</li>
+  <li>✅ Repositorios de GitHub y Bitbucket configurados.</li>
+  <li>✅ Workflows de CI/CD con GitHub Actions.</li>
 </ul>
+
+<h3>
+  <i class="fa-solid fa-flask"></i>
+  Ejecutar tests
+</h3>
+
+<p><strong>Create Service:</strong></p>
+<pre>cd create-service && go test ./... -v</pre>
+
+<p><strong>Read Service:</strong></p>
+<pre>cd read-service && go test ./... -v</pre>
+
+<p><strong>Update Service:</strong></p>
+<pre>cd update-service && go test ./... -v</pre>
+
+<p><strong>Delete Service:</strong></p>
+<pre>cd delete-service && go test ./... -v</pre>
 
 <hr/>
 
@@ -249,16 +335,6 @@ git push origin feature/nueva-funcionalidad
   <i class="fa-solid fa-handshake-angle"></i>
   Contribuciones
 </h2>
-
-<p>
-  Las contribuciones están enfocadas a:
-</p>
-<ul>
-  <li>Agregar nuevos microservicios (read, delete, auth, etc.).</li>
-  <li>Mejorar la estructura interna del código Go.</li>
-  <li>Agregar pruebas unitarias e integración.</li>
-  <li>Mejorar la documentación y ejemplos de uso.</li>
-</ul>
 
 <p>
   <em>Proyecto desarrollado por <strong>DAVID MANTILLA AVILES</strong> y <strong>SANTIAGO PALACIO VASQUEZ</strong>.</em>

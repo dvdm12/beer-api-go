@@ -1,4 +1,4 @@
-module createservice
+module readservice
 
 go 1.25.4
 
