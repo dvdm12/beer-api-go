@@ -1,0 +1,13 @@
+# Tests
+**/*_test.go
+
+# Local environment 
+.env
+
+# Editor files 
+.vscode/
+.idea/
+
+# OS junk files
+.DS_Store
+Thumbs.db
