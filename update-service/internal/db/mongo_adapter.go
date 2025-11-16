@@ -7,19 +7,19 @@ import (
     "go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type MongoCollection struct {
-    Collection *mongo.Collection
+type MongoCollectionAdapter struct {
+    collection *mongo.Collection
 }
 
-func NewMongoCollection(c *mongo.Collection) *MongoCollection {
-    return &MongoCollection{Collection: c}
+func NewMongoCollectionAdapter(c *mongo.Collection) *MongoCollectionAdapter {
+    return &MongoCollectionAdapter{collection: c}
 }
 
-func (m *MongoCollection) UpdateOne(
+func (m *MongoCollectionAdapter) UpdateOne(
     ctx context.Context,
     filter interface{},
     update interface{},
     opts ...*options.UpdateOptions,
 ) (*mongo.UpdateResult, error) {
-    return m.Collection.UpdateOne(ctx, filter, update, opts...)
+    return m.collection.UpdateOne(ctx, filter, update, opts...)
 }

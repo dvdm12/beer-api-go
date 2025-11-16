@@ -1,4 +1,4 @@
-FROM golang:tip-trixie AS builder
+FROM golang:1.25.4-alpine AS builder
 WORKDIR /app
 
 COPY go.mod go.sum ./
@@ -11,5 +11,5 @@ FROM gcr.io/distroless/base-debian12
 WORKDIR /app
 COPY --from=builder /app/server .
 
-EXPOSE 8081
+EXPOSE 8082
 CMD ["./server"]

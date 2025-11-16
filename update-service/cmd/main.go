@@ -1,24 +1,25 @@
 package main
 
 import (
-    "updateservice/internal/controllers"
-    "updateservice/internal/db"
-    "updateservice/internal/repository"
-    "updateservice/internal/services"
-    "github.com/gin-gonic/gin"
+	"updateservice/internal/controllers"
+	"updateservice/internal/db"
+	"updateservice/internal/repository"
+	"updateservice/internal/services"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 
-    collection := db.Connect()
+	collection := db.Connect()
 
-    repo := repository.NewUpdateRepository(collection)
-    service := services.NewUpdateService(repo)
-    controller := controllers.NewUpdateController(service)
+	repo := repository.NewUpdateRepository(collection)
+	service := services.NewUpdateService(repo)
+	controller := controllers.NewUpdateController(service)
 
-    r := gin.Default()
+	r := gin.Default()
 
-    r.PUT("/beers/update", controller.UpdateBeer)
+	r.PUT("/beers/:id", controller.UpdateBeer)
 
-    r.Run(":8081")
+	r.Run(":8082")
 }

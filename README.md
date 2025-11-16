@@ -89,18 +89,32 @@
 </h2>
 
 <pre>
-parcial_three_go/
-├── cmd/
-│   └── main.go              # Punto de entrada del servicio
-├── internal/
-│   ├── controllers/         # Controladores HTTP (Gin handlers)
-│   ├── models/              # Modelos y estructuras de datos
-│   ├── routes/              # Definición de rutas
-│   └── services/            # Lógica de negocio
-├── create-service/          # Código del microservicio de creación
-├── update-service/          # Código del microservicio de actualización
+beer-api-go/
+├── create-service/          # Microservicio de creación
+│   ├── cmd/
+│   │   └── main.go          # Punto de entrada del servicio
+│   ├── internal/
+│   │   ├── controllers/     # Controladores HTTP (Gin handlers)
+│   │   ├── db/              # Adaptadores de base de datos
+│   │   ├── models/          # Modelos y estructuras de datos
+│   │   ├── repository/      # Capa de repositorio
+│   │   └── services/        # Lógica de negocio
+│   ├── Dockerfile
+│   └── go.mod
+├── update-service/          # Microservicio de actualización
+│   ├── cmd/
+│   │   └── main.go          # Punto de entrada del servicio
+│   ├── internal/
+│   │   ├── controllers/     # Controladores HTTP (Gin handlers)
+│   │   ├── db/              # Adaptadores de base de datos
+│   │   ├── models/          # Modelos y estructuras de datos
+│   │   ├── repository/      # Capa de repositorio
+│   │   └── services/        # Lógica de negocio
+│   ├── Dockerfile
+│   └── go.mod
 ├── docker-compose.yml       # Orquestación de contenedores
-└── .env                     # Variables de entorno (no versionar en producción)
+├── .env                     # Variables de entorno
+└── README.md
 </pre>
 
 <hr/>
@@ -134,6 +148,7 @@ COLLECTION=beers
 
 <p>
   Estas variables son utilizadas por los microservicios para conectarse a la base de datos MongoDB.
+  <strong>Nota:</strong> El hostname debe coincidir con el nombre del contenedor de MongoDB definido en <code>docker-compose.yml</code> (<code>mongodb</code>).
 </p>
 
 <hr/>
@@ -153,7 +168,7 @@ cd beer-api</pre>
     <strong>Crear el archivo <code>.env</code></strong> (si no existe) en la raíz del proyecto:
     <pre>
 MONGO_URI=mongodb://mongodb:27017
-DATABASE=beersdb
+DATABASE=beers
 COLLECTION=beers
     </pre>
   </li>
@@ -165,6 +180,17 @@ COLLECTION=beers
   <li>
     <strong>Verificar contenedores en ejecución</strong>
     <pre>docker compose ps</pre>
+    <p>Deberías ver tres contenedores activos:</p>
+    <ul>
+      <li><code>mongodb</code> - Base de datos MongoDB (Puerto 27017)</li>
+      <li><code>create_service</code> - Servicio de creación (Puerto 8080)</li>
+      <li><code>update_service</code> - Servicio de actualización (Puerto 8082)</li>
+    </ul>
+  </li>
+  <li>
+    <strong>Verificar logs de los servicios</strong>
+    <pre>docker logs create_service
+docker logs update_service</pre>
   </li>
 </ol>
 
@@ -175,31 +201,51 @@ COLLECTION=beers
   Endpoints (ejemplo)
 </h2>
 
-<p><strong>Create Service</strong> (ejemplos):</p>
+<p><strong>Create Service</strong> (Puerto 8080):</p>
 
 <ul>
   <li>
     <code>POST /beers</code> – Crear una nueva cerveza.
-  </li>
-  <li>
-    <code>GET /health</code> – Healthcheck del microservicio.
+    <pre>
+curl -X POST http://localhost:8080/beers \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Heineken",
+    "brand": "Heineken",
+    "alcohol": 5.0,
+    "year": 2024
+  }'
+    </pre>
   </li>
 </ul>
 
-<p><strong>Update Service</strong> (ejemplos):</p>
+<p><strong>Update Service</strong> (Puerto 8082):</p>
 
 <ul>
   <li>
     <code>PUT /beers/:id</code> – Actualizar una cerveza existente.
-  </li>
-  <li>
-    <code>GET /health</code> – Healthcheck del microservicio.
+    <pre>
+curl -X PUT http://localhost:8082/beers/BEER_ID \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Heineken Premium",
+    "brand": "Heineken International",
+    "alcohol": 5.2,
+    "year": 2025
+  }'
+    </pre>
   </li>
 </ul>
 
-<p>
-  Los puertos exactos pueden configurarse en el archivo <code>docker-compose.yml</code>.
-</p>
+<p><strong>Modelo de datos Beer:</strong></p>
+<pre>
+{
+  "name": string,      // Nombre de la cerveza
+  "brand": string,     // Marca de la cerveza
+  "alcohol": float,    // Contenido de alcohol
+  "year": int          // Año
+}
+</pre>
 
 <hr/>
 
@@ -238,10 +284,23 @@ git push origin feature/nueva-funcionalidad
 </h2>
 
 <ul>
-  <li>Microservicio <strong>create-service</strong> funcional y conectado a MongoDB.</li>
-  <li>Microservicio <strong>update-service</strong> en desarrollo / integración.</li>
-  <li><code>docker-compose.yml</code> configurado para orquestar servicios y base de datos.</li>
+  <li>✅ Microservicio <strong>create-service</strong> (Puerto 8080).</li>
+  <li>✅ Microservicio <strong>update-service</strong> (Puerto 8082).</li>
+  <li>✅ <code>docker-compose.yml</code> configurado para orquestar servicios y base de datos.</li>
+  <li>✅ Tests unitarios implementados para ambos servicios.</li>
+  <li>✅ Arquitectura estandarizada con adaptadores, repositorios, servicios y controladores.</li>
 </ul>
+
+<h3>
+  <i class="fa-solid fa-flask"></i>
+  Ejecutar tests
+</h3>
+
+<p><strong>Create Service:</strong></p>
+<pre>cd create-service && go test ./... -v</pre>
+
+<p><strong>Update Service:</strong></p>
+<pre>cd update-service && go test ./... -v</pre>
 
 <hr/>
 
