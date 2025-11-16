@@ -1,3 +1,10 @@
+x-service-base: &service-base
+  restart: always
+  env_file: .env
+  depends_on:
+    mongodb:
+      condition: service_healthy
+
 x-healthcheck: &api-healthcheck
   interval: 5s
   timeout: 3s
@@ -9,72 +16,54 @@ services:
     image: mongo
     container_name: mongodb
     restart: always
+    env_file: .env
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
     healthcheck:
       test: [ "CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
+      <<: *api-healthcheck
 
   create-service:
+    <<: *service-base
     build: ./create-service
     container_name: create_service
-    restart: always
-    env_file: .env
     ports:
       - "8080:8080"
     healthcheck:
-      <<: *api-healthcheck
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-    depends_on:
-      mongodb:
-        condition: service_healthy
+      <<: *api-healthcheck
 
   read-service:
+    <<: *service-base
     build: ./read-service
     container_name: read_service
-    restart: always
-    env_file: .env
     ports:
       - "8081:8081"
     healthcheck:
-      <<: *api-healthcheck
       test: [ "CMD", "curl", "-f", "http://localhost:8081/health" ]
-    depends_on:
-      mongodb:
-        condition: service_healthy
+      <<: *api-healthcheck
 
   update-service:
+    <<: *service-base
     build: ./update-service
     container_name: update_service
-    restart: always
-    env_file: .env
     ports:
       - "8082:8082"
     healthcheck:
-      <<: *api-healthcheck
       test: [ "CMD", "curl", "-f", "http://localhost:8082/health" ]
-    depends_on:
-      mongodb:
-        condition: service_healthy
+      <<: *api-healthcheck
 
   delete-service:
+    <<: *service-base
     build: ./delete-service
     container_name: delete_service
-    restart: always
-    env_file: .env
     ports:
       - "8083:8083"
     healthcheck:
-      <<: *api-healthcheck
       test: [ "CMD", "curl", "-f", "http://localhost:8083/health" ]
-    depends_on:
-      mongodb:
-        condition: service_healthy
+      <<: *api-healthcheck
 
 volumes:
   mongo_data:
