@@ -1,0 +1,44 @@
+name: Read-Service CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - "v*.*.*"
+    paths-ignore:
+      - "**.md"
+      - "infra/**"
+      - "assets/**"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "read-service/**"
+
+jobs:
+
+  tests:
+    if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+    uses: ./.github/workflows/reusable-tests.yml
+    with:
+      working-directory: read-service
+
+  docker:
+    needs: tests
+    if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+    uses: ./.github/workflows/reusable-docker.yml
+    with:
+      context: read-service
+      dockerfile: read-service/Dockerfile
+      image-name: read-service
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  release:
+    needs: docker
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    uses: ./.github/workflows/reusable-release.yml
