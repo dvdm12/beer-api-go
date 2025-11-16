@@ -50,6 +50,15 @@
 <hr/>
 
 <h2>
+  <i class="fa-solid fa-users"></i>
+  Diagrama de Infrastructura
+</h2>
+
+<p align="center">
+  <img src="./assets/diagram.svg" width="95%" alt="Arquitectura Beer API">
+</p>
+
+<h2>
   <i class="fa-solid fa-folder-tree"></i>
   Estructura del proyecto
 </h2>
