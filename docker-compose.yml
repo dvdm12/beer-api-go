@@ -1,12 +1,18 @@
+x-healthcheck: &api-healthcheck
+  interval: 5s
+  timeout: 3s
+  retries: 5
+  start_period: 5s
+
 services:
   mongodb:
     image: mongo
     container_name: mongodb
+    restart: always
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-
     healthcheck:
       test: [ "CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')" ]
       interval: 5s
@@ -17,9 +23,13 @@ services:
   create-service:
     build: ./create-service
     container_name: create_service
+    restart: always
     env_file: .env
     ports:
       - "8080:8080"
+    healthcheck:
+      <<: *api-healthcheck
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
     depends_on:
       mongodb:
         condition: service_healthy
@@ -27,9 +37,13 @@ services:
   read-service:
     build: ./read-service
     container_name: read_service
+    restart: always
     env_file: .env
     ports:
       - "8081:8081"
+    healthcheck:
+      <<: *api-healthcheck
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/health" ]
     depends_on:
       mongodb:
         condition: service_healthy
@@ -37,9 +51,13 @@ services:
   update-service:
     build: ./update-service
     container_name: update_service
+    restart: always
     env_file: .env
     ports:
       - "8082:8082"
+    healthcheck:
+      <<: *api-healthcheck
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/health" ]
     depends_on:
       mongodb:
         condition: service_healthy
@@ -47,9 +65,13 @@ services:
   delete-service:
     build: ./delete-service
     container_name: delete_service
+    restart: always
     env_file: .env
     ports:
       - "8083:8083"
+    healthcheck:
+      <<: *api-healthcheck
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/health" ]
     depends_on:
       mongodb:
         condition: service_healthy
