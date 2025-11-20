@@ -1,69 +1,74 @@
-x-service-base: &service-base
-  restart: always
-  env_file: .env
-  depends_on:
-    mongodb:
-      condition: service_healthy
-
-x-healthcheck: &api-healthcheck
-  interval: 5s
-  timeout: 3s
-  retries: 5
-  start_period: 5s
-
 services:
   mongodb:
     image: mongo
-    container_name: beers-mongodb
-    restart: always
-    env_file: .env
+    container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+
     healthcheck:
       test: [ "CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')" ]
-      <<: *api-healthcheck
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   create-service:
-    <<: *service-base
     build: ./create-service
-    container_name: beers-create-service
+    container_name: create_service
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - DATABASE=${DATABASE}
+      - COLLECTION=${COLLECTION}
     ports:
       - "8080:8080"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-      <<: *api-healthcheck
+
+    depends_on:
+      mongodb:
+        condition: service_healthy
 
   read-service:
-    <<: *service-base
     build: ./read-service
-    container_name: beers-read-service
+    container_name: read_service
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - DATABASE=${DATABASE}
+      - COLLECTION=${COLLECTION}
     ports:
       - "8081:8081"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8081/health" ]
-      <<: *api-healthcheck
+
+    depends_on:
+      mongodb:
+        condition: service_healthy
 
   update-service:
-    <<: *service-base
     build: ./update-service
-    container_name: beers-update-service
+    container_name: update_service
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - DATABASE=${DATABASE}
+      - COLLECTION=${COLLECTION}
     ports:
       - "8082:8082"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8082/health" ]
-      <<: *api-healthcheck
+
+    depends_on:
+      mongodb:
+        condition: service_healthy
 
   delete-service:
-    <<: *service-base
     build: ./delete-service
-    container_name: beers-delete-service
+    container_name: delete_service
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - DATABASE=${DATABASE}
+      - COLLECTION=${COLLECTION}
     ports:
       - "8083:8083"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8083/health" ]
-      <<: *api-healthcheck
+
+    depends_on:
+      mongodb:
+        condition: service_healthy
 
 volumes:
   mongo_data:

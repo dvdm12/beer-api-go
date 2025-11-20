@@ -19,8 +19,26 @@ on:
       - "delete-service/**"
 
 jobs:
-  pipeline:
-    uses: ./.github/workflows/reusable-service-pipeline.yml
-    secrets: inherit
+
+  tests:
+    if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+    uses: ./.github/workflows/reusable-tests.yml
     with:
-      service-name: delete
+      working-directory: delete-service
+
+  docker:
+    needs: tests
+    if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+    uses: ./.github/workflows/reusable-docker.yml
+    with:
+      context: delete-service
+      dockerfile: delete-service/Dockerfile
+      image-name: delete-service
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  release:
+    needs: docker
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    uses: ./.github/workflows/reusable-release.yml
