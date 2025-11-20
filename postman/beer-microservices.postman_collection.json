@@ -1,0 +1,723 @@
+{
+	"info": {
+		"_postman_id": "beer-microservices-api",
+		"name": "Beer Microservices API",
+		"description": "Complete API testing collection for Beer Microservices with CRUD operations and automated tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Service",
+			"item": [
+				{
+					"name": "Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has status property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"});",
+									"",
+									"pm.test(\"Service is healthy\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('ok');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{create_service_url}}/health",
+							"host": ["{{create_service_url}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Beer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has success message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.include('created');",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Heineken\",\n    \"brand\": \"Heineken International\",\n    \"alcohol\": 5.0,\n    \"year\": 2024\n}"
+						},
+						"url": {
+							"raw": "{{create_service_url}}/beers",
+							"host": ["{{create_service_url}}"],
+							"path": ["beers"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Beer - Invalid Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response has error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\",\n    \"brand\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{create_service_url}}/beers",
+							"host": ["{{create_service_url}}"],
+							"path": ["beers"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Read Service",
+			"item": [
+				{
+					"name": "Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Service is healthy\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('ok');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{read_service_url}}/health",
+							"host": ["{{read_service_url}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Beers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is an array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});",
+									"",
+									"// Save first beer ID for later tests",
+									"if (pm.response.json().length > 0) {",
+									"    pm.environment.set(\"beer_id\", pm.response.json()[0]._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{read_service_url}}/beers",
+							"host": ["{{read_service_url}}"],
+							"path": ["beers"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Beer by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has beer properties\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('name');",
+									"    pm.expect(jsonData).to.have.property('brand');",
+									"    pm.expect(jsonData).to.have.property('alcohol');",
+									"    pm.expect(jsonData).to.have.property('year');",
+									"});",
+									"",
+									"pm.test(\"Beer has valid alcohol content\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.alcohol).to.be.a('number');",
+									"    pm.expect(jsonData.alcohol).to.be.above(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{read_service_url}}/beers/{{beer_id}}",
+							"host": ["{{read_service_url}}"],
+							"path": ["beers", "{{beer_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Beer by Invalid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response has error message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData.error).to.include('not found');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{read_service_url}}/beers/000000000000000000000000",
+							"host": ["{{read_service_url}}"],
+							"path": ["beers", "000000000000000000000000"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update Service",
+			"item": [
+				{
+					"name": "Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Service is healthy\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('ok');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{update_service_url}}/health",
+							"host": ["{{update_service_url}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Beer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has success message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.include('updated');",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Heineken Premium\",\n    \"brand\": \"Heineken International\",\n    \"alcohol\": 5.2,\n    \"year\": 2025\n}"
+						},
+						"url": {
+							"raw": "{{update_service_url}}/beers/{{beer_id}}",
+							"host": ["{{update_service_url}}"],
+							"path": ["beers", "{{beer_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Beer - Invalid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 500\", function () {",
+									"    pm.response.to.have.status(500);",
+									"});",
+									"",
+									"pm.test(\"Response has error property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Beer\",\n    \"brand\": \"Updated Brand\",\n    \"alcohol\": 6.0,\n    \"year\": 2025\n}"
+						},
+						"url": {
+							"raw": "{{update_service_url}}/beers/invalid_id",
+							"host": ["{{update_service_url}}"],
+							"path": ["beers", "invalid_id"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete Service",
+			"item": [
+				{
+					"name": "Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Service is healthy\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('ok');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{delete_service_url}}/health",
+							"host": ["{{delete_service_url}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Beer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has success message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.include('deleted');",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{delete_service_url}}/beers/{{beer_id}}",
+							"host": ["{{delete_service_url}}"],
+							"path": ["beers", "{{beer_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Beer - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response has error message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData.error).to.include('not found');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{delete_service_url}}/beers/000000000000000000000000",
+							"host": ["{{delete_service_url}}"],
+							"path": ["beers", "000000000000000000000000"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "End-to-End Workflow",
+			"item": [
+				{
+					"name": "1. Create New Beer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Beer created successfully\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Corona Extra\",\n    \"brand\": \"Grupo Modelo\",\n    \"alcohol\": 4.5,\n    \"year\": 2024\n}"
+						},
+						"url": {
+							"raw": "{{create_service_url}}/beers",
+							"host": ["{{create_service_url}}"],
+							"path": ["beers"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get All Beers (Save ID)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Beers retrieved successfully\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Find Corona and save its ID",
+									"var beers = pm.response.json();",
+									"var corona = beers.find(b => b.name === \"Corona Extra\");",
+									"if (corona) {",
+									"    pm.environment.set(\"e2e_beer_id\", corona._id);",
+									"    pm.test(\"Corona Extra found in database\", function () {",
+									"        pm.expect(corona.brand).to.eql(\"Grupo Modelo\");",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{read_service_url}}/beers",
+							"host": ["{{read_service_url}}"],
+							"path": ["beers"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Update Beer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Beer updated successfully\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Corona Extra Premium\",\n    \"brand\": \"Grupo Modelo\",\n    \"alcohol\": 4.6,\n    \"year\": 2025\n}"
+						},
+						"url": {
+							"raw": "{{update_service_url}}/beers/{{e2e_beer_id}}",
+							"host": ["{{update_service_url}}"],
+							"path": ["beers", "{{e2e_beer_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Verify Update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Beer data updated correctly\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql(\"Corona Extra Premium\");",
+									"    pm.expect(jsonData.alcohol).to.eql(4.6);",
+									"    pm.expect(jsonData.year).to.eql(2025);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{read_service_url}}/beers/{{e2e_beer_id}}",
+							"host": ["{{read_service_url}}"],
+							"path": ["beers", "{{e2e_beer_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Delete Beer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Beer deleted successfully\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{delete_service_url}}/beers/{{e2e_beer_id}}",
+							"host": ["{{delete_service_url}}"],
+							"path": ["beers", "{{e2e_beer_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. Verify Deletion",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Beer no longer exists\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{read_service_url}}/beers/{{e2e_beer_id}}",
+							"host": ["{{read_service_url}}"],
+							"path": ["beers", "{{e2e_beer_id}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "create_service_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "read_service_url",
+			"value": "http://localhost:8081",
+			"type": "string"
+		},
+		{
+			"key": "update_service_url",
+			"value": "http://localhost:8082",
+			"type": "string"
+		},
+		{
+			"key": "delete_service_url",
+			"value": "http://localhost:8083",
+			"type": "string"
+		}
+	]
+}
