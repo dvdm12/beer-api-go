@@ -14,7 +14,7 @@ x-healthcheck: &api-healthcheck
 services:
   mongodb:
     image: mongo
-    container_name: mongodb
+    container_name: beers-mongodb
     restart: always
     env_file: .env
     ports:
@@ -28,7 +28,7 @@ services:
   create-service:
     <<: *service-base
     build: ./create-service
-    container_name: create_service
+    container_name: beers-create-service
     ports:
       - "8080:8080"
     healthcheck:
@@ -38,7 +38,7 @@ services:
   read-service:
     <<: *service-base
     build: ./read-service
-    container_name: read_service
+    container_name: beers-read-service
     ports:
       - "8081:8081"
     healthcheck:
@@ -48,7 +48,7 @@ services:
   update-service:
     <<: *service-base
     build: ./update-service
-    container_name: update_service
+    container_name: beers-update-service
     ports:
       - "8082:8082"
     healthcheck:
@@ -58,7 +58,7 @@ services:
   delete-service:
     <<: *service-base
     build: ./delete-service
-    container_name: delete_service
+    container_name: beers-delete-service
     ports:
       - "8083:8083"
     healthcheck:
