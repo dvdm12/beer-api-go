@@ -12,11 +12,6 @@ on:
       image-name:
         required: true
         type: string
-    secrets:
-      DOCKERHUB_USERNAME:
-        required: true
-      DOCKERHUB_TOKEN:
-        required: true
 
 permissions:
   contents: read
@@ -28,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -61,7 +56,7 @@ jobs:
 
       # ---- Build local amd64 image for Trivy ----
       - name: Build local amd64 image for Trivy
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ${{ inputs.context }}
           file: ${{ inputs.dockerfile }}
@@ -71,7 +66,7 @@ jobs:
 
       # ---- Trivy scan ----
       - name: Trivy Security Scan
-        uses: aquasecurity/trivy-action@0.22.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           image-ref: local-scan-image
           format: table
@@ -91,7 +86,7 @@ jobs:
 
       # ---- Build & Push multi-arch ----
       - name: Build and Push Multi-Arch Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ${{ inputs.context }}
           file: ${{ inputs.dockerfile }}

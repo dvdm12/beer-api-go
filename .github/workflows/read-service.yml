@@ -19,42 +19,8 @@ on:
       - "read-service/**"
 
 jobs:
-
-  prepare:
-    runs-on: ubuntu-latest
-    outputs:
-      run_ci: ${{ steps.flags.outputs.run_ci }}
-    steps:
-      - id: flags
-        run: |
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            echo "run_ci=false" >> $GITHUB_OUTPUT
-          else
-            echo "run_ci=true" >> $GITHUB_OUTPUT
-          fi
-
-  tests:
-    needs: prepare
-    if: needs.prepare.outputs.run_ci == 'true'
-    uses: ./.github/workflows/reusable-tests.yml
+  pipeline:
+    uses: ./.github/workflows/reusable-service-pipeline.yml
+    secrets: inherit
     with:
-      working-directory: read-service
-
-  docker:
-    needs: tests
-    if: needs.prepare.outputs.run_ci == 'true'
-    uses: ./.github/workflows/reusable-docker.yml
-    with:
-      context: read-service
-      dockerfile: read-service/Dockerfile
-      image-name: read-service
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-
-  release:
-    needs: prepare
-    if: |
-      needs.prepare.outputs.run_ci == 'false' &&
-      startsWith(github.ref, 'refs/tags/v')
-    uses: ./.github/workflows/reusable-release.yml
+      service-name: read
