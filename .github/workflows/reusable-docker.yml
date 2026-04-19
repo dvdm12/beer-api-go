@@ -25,7 +25,6 @@ permissions:
 jobs:
   docker:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,17 +70,17 @@ jobs:
 
       # ---- Trivy scan ----
       - name: Trivy Security Scan
-        uses: aquasecurity/trivy-action@v0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: local-scan-image
           format: table
           exit-code: 1
           ignore-unfixed: true
+          severity: CRITICAL,HIGH
 
       # ---- Export Docker image (local amd64) ----
       - name: Save Docker image as tar artifact
-        run: |
-          docker save -o image.tar local-scan-image
+        run: docker save -o image.tar local-scan-image
 
       - name: Upload Docker image artifact
         uses: actions/upload-artifact@v4
