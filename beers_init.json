@@ -1,0 +1,422 @@
+[
+    {
+        "name": "Pilsner Urquell",
+        "brand": "Pilsner Urquell",
+        "alcohol": 4.4,
+        "year": 1842
+    },
+    {
+        "name": "Heineken Lager",
+        "brand": "Heineken",
+        "alcohol": 5.0,
+        "year": 1873
+    },
+    {
+        "name": "Guinness Draught",
+        "brand": "Guinness",
+        "alcohol": 4.2,
+        "year": 1759
+    },
+    {
+        "name": "Stella Artois",
+        "brand": "AB InBev",
+        "alcohol": 5.2,
+        "year": 1926
+    },
+    {
+        "name": "Paulaner Hefe Weissbier",
+        "brand": "Paulaner",
+        "alcohol": 5.5,
+        "year": 1634
+    },
+    {
+        "name": "Weihenstephaner Hefeweissbier",
+        "brand": "Weihenstephan",
+        "alcohol": 5.4,
+        "year": 1040
+    },
+    {
+        "name": "Leffe Blonde",
+        "brand": "Leffe",
+        "alcohol": 6.6,
+        "year": 1240
+    },
+    {
+        "name": "Duvel",
+        "brand": "Duvel Moortgat",
+        "alcohol": 8.5,
+        "year": 1923
+    },
+    {
+        "name": "Hoegaarden Wit",
+        "brand": "Hoegaarden",
+        "alcohol": 4.9,
+        "year": 1445
+    },
+    {
+        "name": "Chimay Blue",
+        "brand": "Chimay",
+        "alcohol": 9.0,
+        "year": 1862
+    },
+    {
+        "name": "Chimay Red",
+        "brand": "Chimay",
+        "alcohol": 7.0,
+        "year": 1862
+    },
+    {
+        "name": "Chimay White",
+        "brand": "Chimay",
+        "alcohol": 8.0,
+        "year": 1862
+    },
+    {
+        "name": "Westmalle Tripel",
+        "brand": "Westmalle",
+        "alcohol": 9.5,
+        "year": 1934
+    },
+    {
+        "name": "Westvleteren 12",
+        "brand": "Trappist Westvleteren",
+        "alcohol": 10.2,
+        "year": 1940
+    },
+    {
+        "name": "Orval",
+        "brand": "Orval",
+        "alcohol": 6.2,
+        "year": 1931
+    },
+    {
+        "name": "Rochefort 10",
+        "brand": "Rochefort",
+        "alcohol": 11.3,
+        "year": 1952
+    },
+    {
+        "name": "Rochefort 8",
+        "brand": "Rochefort",
+        "alcohol": 9.2,
+        "year": 1955
+    },
+    {
+        "name": "Rochefort 6",
+        "brand": "Rochefort",
+        "alcohol": 7.5,
+        "year": 1950
+    },
+    {
+        "name": "Tripel Karmeliet",
+        "brand": "Bosteels",
+        "alcohol": 8.4,
+        "year": 1996
+    },
+    {
+        "name": "Kwak",
+        "brand": "Bosteels",
+        "alcohol": 8.4,
+        "year": 1791
+    },
+    {
+        "name": "La Chouffe",
+        "brand": "Brasserie d'Achouffe",
+        "alcohol": 8.0,
+        "year": 1982
+    },
+    {
+        "name": "Delirium Tremens",
+        "brand": "Huyghe",
+        "alcohol": 8.5,
+        "year": 1989
+    },
+    {
+        "name": "Affligem Blonde",
+        "brand": "Affligem",
+        "alcohol": 6.7,
+        "year": 1074
+    },
+    {
+        "name": "Grimbergen Blonde",
+        "brand": "Grimbergen",
+        "alcohol": 6.7,
+        "year": 1128
+    },
+    {
+        "name": "Erdinger Weissbier",
+        "brand": "Erdinger",
+        "alcohol": 5.3,
+        "year": 1886
+    },
+    {
+        "name": "Franziskaner Weissbier",
+        "brand": "Franziskaner",
+        "alcohol": 5.0,
+        "year": 1363
+    },
+    {
+        "name": "Augustiner Helles",
+        "brand": "Augustiner",
+        "alcohol": 5.2,
+        "year": 1328
+    },
+    {
+        "name": "Spaten Lager",
+        "brand": "Spaten",
+        "alcohol": 5.2,
+        "year": 1397
+    },
+    {
+        "name": "Beck's",
+        "brand": "Beck's",
+        "alcohol": 5.0,
+        "year": 1873
+    },
+    {
+        "name": "Warsteiner Premium",
+        "brand": "Warsteiner",
+        "alcohol": 4.8,
+        "year": 1753
+    },
+    {
+        "name": "Bitburger Pils",
+        "brand": "Bitburger",
+        "alcohol": 4.8,
+        "year": 1817
+    },
+    {
+        "name": "Krombacher Pils",
+        "brand": "Krombacher",
+        "alcohol": 4.8,
+        "year": 1803
+    },
+    {
+        "name": "Jever Pilsener",
+        "brand": "Jever",
+        "alcohol": 4.9,
+        "year": 1848
+    },
+    {
+        "name": "Veltins Pilsener",
+        "brand": "Veltins",
+        "alcohol": 4.8,
+        "year": 1824
+    },
+    {
+        "name": "Grolsch Premium Lager",
+        "brand": "Grolsch",
+        "alcohol": 5.0,
+        "year": 1615
+    },
+    {
+        "name": "Amstel Lager",
+        "brand": "Amstel",
+        "alcohol": 5.0,
+        "year": 1870
+    },
+    {
+        "name": "Peroni Nastro Azzurro",
+        "brand": "Peroni",
+        "alcohol": 5.1,
+        "year": 1963
+    },
+    {
+        "name": "Moretti Lager",
+        "brand": "Birra Moretti",
+        "alcohol": 4.6,
+        "year": 1859
+    },
+    {
+        "name": "Menabrea Bionda",
+        "brand": "Menabrea",
+        "alcohol": 4.8,
+        "year": 1846
+    },
+    {
+        "name": "Estrella Damm",
+        "brand": "Damm",
+        "alcohol": 5.4,
+        "year": 1876
+    },
+    {
+        "name": "Mahou Cinco Estrellas",
+        "brand": "Mahou",
+        "alcohol": 5.5,
+        "year": 1890
+    },
+    {
+        "name": "San Miguel Especial",
+        "brand": "San Miguel",
+        "alcohol": 5.0,
+        "year": 1890
+    },
+    {
+        "name": "Cruzcampo",
+        "brand": "Cruzcampo",
+        "alcohol": 4.8,
+        "year": 1904
+    },
+    {
+        "name": "Alhambra Reserva 1925",
+        "brand": "Alhambra",
+        "alcohol": 6.4,
+        "year": 1925
+    },
+    {
+        "name": "Fuller's London Pride",
+        "brand": "Fuller's",
+        "alcohol": 4.7,
+        "year": 1959
+    },
+    {
+        "name": "Newcastle Brown Ale",
+        "brand": "Newcastle",
+        "alcohol": 4.7,
+        "year": 1927
+    },
+    {
+        "name": "Boddingtons Pub Ale",
+        "brand": "Boddingtons",
+        "alcohol": 4.6,
+        "year": 1778
+    },
+    {
+        "name": "Samuel Smith Oatmeal Stout",
+        "brand": "Samuel Smith",
+        "alcohol": 5.0,
+        "year": 1758
+    },
+    {
+        "name": "BrewDog Punk IPA",
+        "brand": "BrewDog",
+        "alcohol": 5.6,
+        "year": 2007
+    },
+    {
+        "name": "Carlsberg Pilsner",
+        "brand": "Carlsberg",
+        "alcohol": 5.0,
+        "year": 1847
+    },
+    {
+        "name": "Tuborg Green",
+        "brand": "Tuborg",
+        "alcohol": 4.6,
+        "year": 1880
+    },
+    {
+        "name": "Kronenbourg 1664",
+        "brand": "Kronenbourg",
+        "alcohol": 5.5,
+        "year": 1664
+    },
+    {
+        "name": "Fischer Tradition",
+        "brand": "Fischer",
+        "alcohol": 6.0,
+        "year": 1821
+    },
+    {
+        "name": "Pelforth Brune",
+        "brand": "Pelforth",
+        "alcohol": 6.5,
+        "year": 1921
+    },
+    {
+        "name": "Mythos Lager",
+        "brand": "Mythos",
+        "alcohol": 5.0,
+        "year": 1970
+    },
+    {
+        "name": "Alpha Beer",
+        "brand": "Alpha",
+        "alcohol": 5.0,
+        "year": 1961
+    },
+    {
+        "name": "Efes Pilsen",
+        "brand": "Efes",
+        "alcohol": 5.0,
+        "year": 1969
+    },
+    {
+        "name": "Zywiec",
+        "brand": "Zywiec",
+        "alcohol": 5.6,
+        "year": 1856
+    },
+    {
+        "name": "Tyskie Gronie",
+        "brand": "Tyskie",
+        "alcohol": 5.2,
+        "year": 1629
+    },
+    {
+        "name": "Staropramen Lager",
+        "brand": "Staropramen",
+        "alcohol": 5.0,
+        "year": 1869
+    },
+    {
+        "name": "Kozel Premium Lager",
+        "brand": "Velkopopovicky Kozel",
+        "alcohol": 4.6,
+        "year": 1874
+    },
+    {
+        "name": "Budvar Czech Lager",
+        "brand": "Budweiser Budvar",
+        "alcohol": 5.0,
+        "year": 1895
+    },
+    {
+        "name": "Gambrinus Original",
+        "brand": "Gambrinus",
+        "alcohol": 5.0,
+        "year": 1869
+    },
+    {
+        "name": "Baltika No.7",
+        "brand": "Baltika",
+        "alcohol": 5.4,
+        "year": 1994
+    },
+    {
+        "name": "Murphy's Irish Stout",
+        "brand": "Murphy's",
+        "alcohol": 4.0,
+        "year": 1856
+    },
+    {
+        "name": "Beamish Irish Stout",
+        "brand": "Beamish",
+        "alcohol": 4.1,
+        "year": 1792
+    },
+    {
+        "name": "O'Hara's Irish Red",
+        "brand": "O'Hara's",
+        "alcohol": 4.3,
+        "year": 1996
+    },
+    {
+        "name": "Innis & Gunn Original",
+        "brand": "Innis & Gunn",
+        "alcohol": 6.6,
+        "year": 2003
+    },
+    {
+        "name": "Tennent's Lager",
+        "brand": "Tennent's",
+        "alcohol": 4.0,
+        "year": 1885
+    },
+    {
+        "name": "Sagres",
+        "brand": "Sagres",
+        "alcohol": 5.0,
+        "year": 1940
+    }
+]
