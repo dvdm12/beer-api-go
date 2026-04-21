@@ -1,33 +1,53 @@
+// Package controllers provides HTTP handlers for the create service.
 package controllers
 
 import (
-    "createservice/internal/models"
-    "createservice/internal/services"
-    "github.com/gin-gonic/gin"
-    "net/http"
+	"createservice/internal/errors"
+	"createservice/internal/models"
+	"createservice/internal/services"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
+// CreateController handles beer creation requests.
 type CreateController struct {
-    service services.CreateServiceInterface
+	service services.CreateServiceInterface
 }
 
+// NewCreateController creates a new controller instance.
 func NewCreateController(service services.CreateServiceInterface) *CreateController {
-    return &CreateController{service: service}
+	return &CreateController{service: service}
 }
 
+// CreateBeer handles the HTTP request to create a beer.
 func (c *CreateController) CreateBeer(ctx *gin.Context) {
-    var beer models.Beer
+	var beer models.Beer
 
-    if err := ctx.ShouldBindJSON(&beer); err != nil {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+	// Parse and validate request body.
+	if err := ctx.ShouldBindJSON(&beer); err != nil {
+		appErr := errors.NewValidationError(err.Error())
+		ctx.JSON(appErr.StatusCode(), errorResponse(appErr))
+		return
+	}
 
-    if err := c.service.CreateBeer(beer); err != nil {
-        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create beer"})
-        return
-    }
+	// Execute business logic.
+	if err := c.service.CreateBeer(beer); err != nil {
+		appErr, _ := errors.FromError(err)
+		ctx.JSON(appErr.StatusCode(), errorResponse(appErr))
+		return
+	}
 
-    ctx.JSON(http.StatusOK, gin.H{"message": "Beer created successfully"})
+	// Return success response.
+	ctx.JSON(http.StatusCreated, gin.H{
+		"message": "Beer has been created successfully",
+	})
 }
-    
+
+// errorResponse formats an AppError for HTTP responses.
+func errorResponse(err errors.AppError) gin.H {
+	return gin.H{
+		"code":    err.Code(),
+		"message": err.Error(),
+	}
+}
