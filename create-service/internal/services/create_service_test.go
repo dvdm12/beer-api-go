@@ -96,7 +96,8 @@ func TestCreateService_CreateBeer_AlcoholOutOfRange(t *testing.T) {
 	appErr, ok := err.(errors.AppError)
 	assert.True(t, ok)
 	assert.Equal(t, errors.CodeInvalidInput, appErr.Code())
-	assert.Contains(t, appErr.Error(), "alcohol must be between 0 and 100")
+	assert.Contains(t, appErr.Error(), 
+	fmt.Sprintf("alcohol percentage must be between %.1f and %.1f", MinAlcohol, MaxAlcohol))
 	assert.False(t, mock.createCalled)
 }
 

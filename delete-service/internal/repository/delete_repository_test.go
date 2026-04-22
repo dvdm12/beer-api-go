@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -18,7 +17,7 @@ type mockCollection struct {
 }
 
 // DeleteOne mock implementation.
-func (m *mockCollection) DeleteOne(ctx context.Context, filter bson.M) (*mongo.DeleteResult, error) {
+func (m *mockCollection) DeleteOne(ctx context.Context, filter interface{}) (*mongo.DeleteResult, error) {
 	if m.deleteErr != nil {
 		return nil, m.deleteErr
 	}
