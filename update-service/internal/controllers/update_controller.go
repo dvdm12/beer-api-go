@@ -1,38 +1,56 @@
 package controllers
 
 import (
-    "updateservice/internal/models"
-    "updateservice/internal/services"
-    "github.com/gin-gonic/gin"
-    "net/http"
+	"net/http"
+
+	"updateservice/internal/errors"
+	"updateservice/internal/models"
+	"updateservice/internal/services"
+
+	"github.com/gin-gonic/gin"
 )
 
+// UpdateController handles HTTP requests for beer updates.
 type UpdateController struct {
-    service services.UpdateServiceInterface
+	service services.UpdateServiceInterface
 }
 
+// NewUpdateController creates a new UpdateController instance.
 func NewUpdateController(service services.UpdateServiceInterface) *UpdateController {
-    return &UpdateController{service: service}
+	return &UpdateController{service: service}
 }
 
+// UpdateBeer processes the PUT request to update a beer's information.
 func (c *UpdateController) UpdateBeer(ctx *gin.Context) {
-    id := ctx.Param("id")
+	// Extract the beer ID from the URL path.
+	id := ctx.Param("id")
+	if id == "" {
+		appErr := errors.BadRequest("Beer ID parameter is required")
+		ctx.JSON(appErr.StatusCode(), gin.H{"error": appErr.Error(), "code": appErr.Code()})
+		return
+	}
 
-    if id == "" {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Beer ID is required"})
-        return
-    }
+	// Bind the incoming JSON payload to the Beer model.
+	var beer models.Beer
+	if err := ctx.ShouldBindJSON(&beer); err != nil {
+		appErr := errors.BadRequest("Invalid JSON format or structure")
+		ctx.JSON(appErr.StatusCode(), gin.H{"error": appErr.Error(), "code": appErr.Code()})
+		return
+	}
 
-    var beer models.Beer
-    if err := ctx.ShouldBindJSON(&beer); err != nil {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+	// Forward the request to the service layer using the request context.
+	// This allows cancellation signals to propagate through the architecture.
+	if err := c.service.UpdateBeer(ctx.Request.Context(), id, beer); err != nil {
+		// Map any error to the custom AppError contract.
+		appErr, _ := errors.FromError(err)
 
-    if err := c.service.UpdateBeer(id, beer); err != nil {
-        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update beer"})
-        return
-    }
+		ctx.JSON(appErr.StatusCode(), gin.H{
+			"error": appErr.Error(),
+			"code":  appErr.Code(),
+		})
+		return
+	}
 
-    ctx.JSON(http.StatusOK, gin.H{"message": "Beer updated successfully"})
+	// Return a successful response.
+	ctx.JSON(http.StatusOK, gin.H{"message": "Beer updated successfully"})
 }

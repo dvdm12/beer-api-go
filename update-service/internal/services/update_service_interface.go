@@ -1,7 +1,10 @@
 package services
 
-import "updateservice/internal/models"
+import (
+	"context"
+	"updateservice/internal/models"
+)
 
 type UpdateServiceInterface interface {
-    UpdateBeer(id string, beer models.Beer) error
+	UpdateBeer(ctx context.Context, id string, beer models.Beer) error
 }

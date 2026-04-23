@@ -1,7 +1,10 @@
 package repository
 
-import "updateservice/internal/models"
+import (
+	"context"
+	"updateservice/internal/models"
+)
 
 type UpdateRepositoryInterface interface {
-    UpdateBeer(id string, beer models.Beer) (*struct{}, error)
+	UpdateBeer(ctx context.Context, id string, beer models.Beer) error
 }
