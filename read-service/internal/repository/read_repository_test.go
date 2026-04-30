@@ -1,3 +1,4 @@
+// Package repository contains persistence tests for the read service.
 package repository
 
 import (
@@ -8,6 +9,7 @@ import (
 	"readservice/internal/db"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -26,9 +28,11 @@ func (m *mockSingleResult) Decode(v interface{}) error {
 
 // mockCollection simulates a MongoDB collection.
 // It returns predefined errors for testing scenarios.
+// findCursor allows injecting a real cursor for GetAllBeers success tests.
 type mockCollection struct {
 	findOneErr error
 	findErr    error
+	findCursor *mongo.Cursor
 }
 
 // FindOne mocks retrieving a single document.
@@ -50,7 +54,16 @@ func (m *mockCollection) Find(
 	if m.findErr != nil {
 		return nil, m.findErr
 	}
-	return nil, nil
+	return m.findCursor, nil
+}
+
+// emptyCursor returns a real zero-document cursor.
+// Required to exercise cursor.Close and cursor.All without a live connection.
+func emptyCursor(tb testing.TB) *mongo.Cursor {
+	tb.Helper()
+	c, err := mongo.NewCursorFromDocuments(nil, nil, nil)
+	require.NoError(tb, err)
+	return c
 }
 
 // TestReadRepository_Creation verifies repository initialization.
@@ -112,4 +125,34 @@ func TestReadRepository_GetBeerByID_Success(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, beer)
+}
+
+// TestReadRepository_GetBeerByID_DBError verifies that unexpected FindOne errors
+// are propagated without modification.
+func TestReadRepository_GetBeerByID_DBError(t *testing.T) {
+	mock := &mockCollection{
+		findOneErr: errors.New("connection timeout"),
+	}
+	repo := NewReadRepository(mock)
+
+	_, err := repo.GetBeerByID(primitive.NewObjectID().Hex())
+
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "connection timeout")
+}
+
+// TestReadRepository_GetAllBeers_Success verifies that an empty collection
+// returns a non-nil empty slice without error.
+// Uses a real cursor to cover cursor.Close and cursor.All branches.
+func TestReadRepository_GetAllBeers_Success(t *testing.T) {
+	mock := &mockCollection{
+		findCursor: emptyCursor(t),
+	}
+	repo := NewReadRepository(mock)
+
+	beers, err := repo.GetAllBeers()
+
+	assert.Nil(t, err)
+	assert.NotNil(t, beers)
+	assert.Empty(t, beers)
 }

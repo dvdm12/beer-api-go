@@ -1,4 +1,3 @@
-// Package repository contains persistence tests.
 package repository
 
 import (

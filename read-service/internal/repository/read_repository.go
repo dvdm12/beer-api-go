@@ -43,13 +43,11 @@ func (r *ReadRepository) GetBeerByID(id string) (*models.Beer, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Validate ID format
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, ErrInvalidID
 	}
 
-	// Query database
 	var beer models.Beer
 	err = r.collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&beer)
 	if err != nil {
@@ -65,7 +63,7 @@ func (r *ReadRepository) GetBeerByID(id string) (*models.Beer, error) {
 // GetAllBeers retrieves all beers from the collection.
 //
 // Returns:
-//   - A slice of Beer (can be empty if no records exist).
+//   - A non-nil slice of Beer (empty if no records exist).
 //   - An error if the query fails.
 func (r *ReadRepository) GetAllBeers() ([]models.Beer, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -77,7 +75,8 @@ func (r *ReadRepository) GetAllBeers() ([]models.Beer, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var beers []models.Beer
+	// Initialize to non-nil so callers always receive a slice, never nil.
+	beers := make([]models.Beer, 0)
 	if err = cursor.All(ctx, &beers); err != nil {
 		return nil, err
 	}
