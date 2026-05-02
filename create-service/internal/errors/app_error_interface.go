@@ -44,10 +44,10 @@ type businessError struct {
 	cause      error
 }
 
-func (e *businessError) Error() string      { return e.message }
-func (e *businessError) Code() string       { return e.code }
-func (e *businessError) StatusCode() int    { return e.statusCode }
-func (e *businessError) Unwrap() error      { return e.cause }
+func (e *businessError) Error() string   { return e.message }
+func (e *businessError) Code() string    { return e.code }
+func (e *businessError) StatusCode() int { return e.statusCode }
+func (e *businessError) Unwrap() error   { return e.cause }
 
 // New creates a new AppError.
 func New(message, code string, statusCode int) AppError {
