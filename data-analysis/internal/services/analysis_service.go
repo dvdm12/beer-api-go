@@ -1,56 +1,63 @@
-// Package services implements business logic for beer analysis.
+// Package services implements beer analysis business logic.
 package services
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
 
-	"dataanalysis/internal/errors"
+	apperrors "dataanalysis/internal/errors"
 	"dataanalysis/internal/models"
 	"dataanalysis/internal/repository"
 )
 
-// AnalysisService implements AnalysisServiceInterface.
+// AnalysisService provides beer analysis operations.
 type AnalysisService struct {
 	repo repository.AnalysisRepositoryInterface
 }
 
-// NewAnalysisService creates a new AnalysisService.
+// NewAnalysisService returns a new AnalysisService.
 func NewAnalysisService(repo repository.AnalysisRepositoryInterface) *AnalysisService {
 	return &AnalysisService{repo: repo}
 }
 
-// GetByID retrieves a beer by its identifier.
-func (s *AnalysisService) GetByID(ctx context.Context, id string) (*models.Beer, error) {
-	if id == "" {
-		return nil, fmt.Errorf("%w: id cannot be empty", ErrInvalidBeerQuery)
-	}
-
-	beer, err := s.repo.GetByID(ctx, id)
+// GetStrongest returns the beer with the highest alcohol content.
+func (s *AnalysisService) GetStrongest(ctx context.Context) (*models.Beer, error) {
+	beer, err := s.repo.FindTop(ctx, repository.SortByAlcohol, true)
 	if err != nil {
 		return nil, s.mapError(err)
 	}
 	return beer, nil
 }
 
-// FindBeers retrieves beers matching the query.
-func (s *AnalysisService) FindBeers(ctx context.Context, q BeerQuery) ([]models.Beer, error) {
-	normalized, err := q.Validate()
-	if err != nil {
-		return nil, err
-	}
-
-	beers, err := s.repo.Find(ctx, s.translateFilter(normalized.Filter))
+// GetWeakest returns the beer with the lowest alcohol content.
+func (s *AnalysisService) GetWeakest(ctx context.Context) (*models.Beer, error) {
+	beer, err := s.repo.FindTop(ctx, repository.SortByAlcohol, false)
 	if err != nil {
 		return nil, s.mapError(err)
 	}
-	if len(beers) == 0 {
-		return nil, fmt.Errorf("%w", ErrNoResults)
-	}
-	return beers, nil
+	return beer, nil
 }
 
-// GetStats computes global statistics from all beers.
+// GetOldest returns the beer with the earliest year.
+func (s *AnalysisService) GetOldest(ctx context.Context) (*models.Beer, error) {
+	beer, err := s.repo.FindTop(ctx, repository.SortByYear, false)
+	if err != nil {
+		return nil, s.mapError(err)
+	}
+	return beer, nil
+}
+
+// GetNewest returns the beer with the latest year.
+func (s *AnalysisService) GetNewest(ctx context.Context) (*models.Beer, error) {
+	beer, err := s.repo.FindTop(ctx, repository.SortByYear, true)
+	if err != nil {
+		return nil, s.mapError(err)
+	}
+	return beer, nil
+}
+
+// GetStats returns global beer statistics.
 func (s *AnalysisService) GetStats(ctx context.Context) (*models.GeneralStats, error) {
 	beers, err := s.repo.Find(ctx, repository.BeerFilter{})
 	if err != nil {
@@ -62,7 +69,7 @@ func (s *AnalysisService) GetStats(ctx context.Context) (*models.GeneralStats, e
 	return computeStats(beers), nil
 }
 
-// GetStatsByBrand computes statistics grouped by brand.
+// GetStatsByBrand returns statistics grouped by brand.
 func (s *AnalysisService) GetStatsByBrand(ctx context.Context) ([]models.BrandStats, error) {
 	beers, err := s.repo.Find(ctx, repository.BeerFilter{})
 	if err != nil {
@@ -74,7 +81,7 @@ func (s *AnalysisService) GetStatsByBrand(ctx context.Context) ([]models.BrandSt
 	return computeStatsByBrand(beers), nil
 }
 
-// computeStats calculates aggregate statistics from beers.
+// computeStats calculates global statistics.
 func computeStats(beers []models.Beer) *models.GeneralStats {
 	stats := &models.GeneralStats{Total: int64(len(beers))}
 	brandSet := make(map[string]struct{})
@@ -87,7 +94,6 @@ func computeStats(beers []models.Beer) *models.GeneralStats {
 	for _, b := range beers {
 		brandSet[b.Brand] = struct{}{}
 		totalAlcohol += b.Alcohol
-
 		if b.Alcohol < minAlcohol {
 			minAlcohol = b.Alcohol
 		}
@@ -108,11 +114,10 @@ func computeStats(beers []models.Beer) *models.GeneralStats {
 	stats.OldestYear = minYear
 	stats.NewestYear = maxYear
 	stats.TotalBrands = int64(len(brandSet))
-
 	return stats
 }
 
-// computeStatsByBrand calculates statistics per brand.
+// computeStatsByBrand calculates statistics by brand.
 func computeStatsByBrand(beers []models.Beer) []models.BrandStats {
 	brandMap := make(map[string]*models.BrandStats)
 
@@ -124,11 +129,9 @@ func computeStatsByBrand(beers []models.Beer) []models.BrandStats {
 				MaxAlcohol: b.Alcohol,
 			}
 		}
-
 		s := brandMap[b.Brand]
 		s.Count++
 		s.TotalAlcohol += b.Alcohol
-
 		if b.Alcohol < s.MinAlcohol {
 			s.MinAlcohol = b.Alcohol
 		}
@@ -142,37 +145,22 @@ func computeStatsByBrand(beers []models.Beer) []models.BrandStats {
 		s.AvgAlcohol = s.TotalAlcohol / float64(s.Count)
 		result = append(result, *s)
 	}
-
 	return result
 }
 
-// translateFilter maps service filter to repository filter.
-func (s *AnalysisService) translateFilter(f BeerFilter) repository.BeerFilter {
-	return repository.BeerFilter{
-		Brand:      f.Brand,
-		Name:       f.Name,
-		NameLike:   f.NameLike,
-		MinAlcohol: f.MinAlcohol,
-		MaxAlcohol: f.MaxAlcohol,
-		FromYear:   f.FromYear,
-		ToYear:     f.ToYear,
-	}
-}
-
-// mapError converts repository errors to service-level errors.
+// mapError converts repository errors.
 func (s *AnalysisService) mapError(err error) error {
 	if err == nil {
 		return nil
 	}
 
-	switch err {
-	case repository.ErrNoBeerFound:
-		return fmt.Errorf("%w", ErrBeerNotFound)
-	case repository.ErrEmptyCollection:
-		return fmt.Errorf("%w", ErrNoResults)
-	case repository.ErrInvalidID:
-		return fmt.Errorf("%w: invalid id format", ErrInvalidBeerQuery)
+	var repoErr *repository.RepoError
+	if stderrors.As(err, &repoErr) {
+		if repoErr.Category == repository.CategoryNotFound {
+			return fmt.Errorf("%w", ErrNoResults)
+		}
+		return apperrors.Internal(err)
 	}
 
-	return errors.Internal(err)
+	return apperrors.Internal(err)
 }

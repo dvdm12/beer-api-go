@@ -12,13 +12,12 @@ import (
 type Category string
 
 const (
-	CategoryNotFound  Category = "NOT_FOUND"
-	CategoryTimeout   Category = "TIMEOUT"
-	CategoryNetwork   Category = "NETWORK"
-	CategoryDecode    Category = "DECODE"
-	CategoryCursor    Category = "CURSOR"
-	CategoryDuplicate Category = "DUPLICATE"
-	CategoryUnknown   Category = "UNKNOWN"
+	CategoryNotFound Category = "NOT_FOUND"
+	CategoryTimeout  Category = "TIMEOUT"
+	CategoryNetwork  Category = "NETWORK"
+	CategoryDecode   Category = "DECODE"
+	CategoryCursor   Category = "CURSOR"
+	CategoryUnknown  Category = "UNKNOWN"
 )
 
 // Operation identifies the repository action that failed.
@@ -26,9 +25,7 @@ type Operation string
 
 const (
 	OpFind    Operation = "find"
-	OpFindOne Operation = "findOne"
 	OpFindTop Operation = "findTop"
-	OpInsert  Operation = "insert"
 )
 
 // Collection defines known MongoDB collections.
@@ -46,19 +43,9 @@ const (
 	MsgTimeout         = "operation timed out"
 	MsgServerInterrupt = "server interrupted"
 	MsgSocketError     = "socket or key error"
-	MsgDuplicateKey    = "duplicate key violation"
-	MsgWriteConcern    = "write concern error"
-	MsgWriteUnknown    = "unmapped write error"
 	MsgNetworkFailure  = "network failure"
 	MsgDecodeFailed    = "document decode failed"
 	MsgUnmapped        = "unmapped mongo error"
-)
-
-// Domain-level errors used outside the repository layer.
-var (
-	ErrNoBeerFound     = errors.New("no beer found")
-	ErrEmptyCollection = errors.New("no beers in collection")
-	ErrInvalidID       = errors.New("invalid beer ID format")
 )
 
 // RepoError represents a structured repository error.
@@ -106,7 +93,6 @@ var (
 )
 
 // MapMongoError maps MongoDB errors into RepoError.
-// It attaches operation and collection context for tracing.
 func MapMongoError(err error, op Operation, collection Collection, logger Logger) error {
 	if err == nil {
 		return nil
@@ -138,12 +124,6 @@ func MapMongoError(err error, op Operation, collection Collection, logger Logger
 		return mapCommandError(cmdErr, op, err)
 	}
 
-	// Write errors
-	var writeErr mongo.WriteException
-	if errors.As(err, &writeErr) {
-		return mapWriteException(writeErr, op, err)
-	}
-
 	// Fallback
 	return mapByMessage(err, op)
 }
@@ -165,39 +145,6 @@ func mapCommandError(cmd mongo.CommandError, op Operation, original error) *Repo
 			original,
 		)
 	}
-}
-
-// mapWriteException aggregates write errors.
-func mapWriteException(writeErr mongo.WriteException, op Operation, original error) *RepoError {
-	if writeErr.WriteConcernError != nil {
-		return newRepoError(CategoryUnknown, MsgWriteConcern, op, original)
-	}
-
-	categories := make(map[Category]struct{})
-	for _, we := range writeErr.WriteErrors {
-		switch we.Code {
-		case 11000, 11001:
-			categories[CategoryDuplicate] = struct{}{}
-		case 50:
-			categories[CategoryTimeout] = struct{}{}
-		case 9001:
-			categories[CategoryNetwork] = struct{}{}
-		default:
-			categories[CategoryUnknown] = struct{}{}
-		}
-	}
-
-	if _, ok := categories[CategoryDuplicate]; ok {
-		return newRepoError(CategoryDuplicate, MsgDuplicateKey, op, original)
-	}
-	if _, ok := categories[CategoryTimeout]; ok {
-		return newRepoError(CategoryTimeout, MsgTimeout, op, original)
-	}
-	if _, ok := categories[CategoryNetwork]; ok {
-		return newRepoError(CategoryNetwork, MsgNetworkFailure, op, original)
-	}
-
-	return newRepoError(CategoryUnknown, MsgWriteUnknown, op, original)
 }
 
 // mapByMessage matches errors by message patterns.
@@ -222,18 +169,4 @@ func mapByMessage(err error, op Operation) *RepoError {
 	}
 
 	return newRepoError(CategoryUnknown, MsgUnmapped, op, err)
-}
-
-// GetCategory extracts the Category from an error.
-func GetCategory(err error) Category {
-	var e *RepoError
-	if errors.As(err, &e) {
-		return e.Category
-	}
-	return CategoryUnknown
-}
-
-// IsCategory reports whether the error matches a category.
-func IsCategory(err error, cat Category) bool {
-	return GetCategory(err) == cat
 }

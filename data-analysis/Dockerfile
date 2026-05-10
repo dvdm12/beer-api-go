@@ -8,7 +8,7 @@ RUN go mod download
 FROM base AS tester
 COPY . .
 # If tests fail, the build stops here
-#RUN go test -v ./...
+RUN go test -v ./...
 
 # --- Stage 3: Builder (Inherits from tester) ---
 # This ensures builder only runs if tester succeeds
@@ -21,6 +21,6 @@ FROM gcr.io/distroless/base-debian12
 WORKDIR /app
 COPY --from=builder /app/server .
 
-EXPOSE 8080
+EXPOSE 8084
 USER nonroot:nonroot
 CMD ["./server"]
