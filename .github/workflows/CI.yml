@@ -1,4 +1,4 @@
-name: Create-Service CI/CD
+name: CI/CD
 
 on:
   push:
@@ -11,20 +11,21 @@ on:
       - "**.md"
       - "infra/**"
       - "assets/**"
-
   pull_request:
     branches:
       - main
-    paths:
-      - "create-service/**"
 
 jobs:
-
   prepare:
     runs-on: ubuntu-latest
     outputs:
       run_ci: ${{ steps.flags.outputs.run_ci }}
+      services: ${{ steps.detect.outputs.services }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
       - id: flags
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
@@ -33,21 +34,32 @@ jobs:
             echo "run_ci=true" >> $GITHUB_OUTPUT
           fi
 
+      - id: detect
+        run: bash .github/scripts/detect-services.sh
+
   tests:
     needs: prepare
     if: needs.prepare.outputs.run_ci == 'true'
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.prepare.outputs.services) }}
+      fail-fast: false
     uses: ./.github/workflows/reusable-tests.yml
     with:
-      working-directory: create-service
+      working-directory: ${{ matrix.service }}
 
   docker:
-    needs: tests
+    needs: [prepare, tests]
     if: needs.prepare.outputs.run_ci == 'true'
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.prepare.outputs.services) }}
+      fail-fast: false
     uses: ./.github/workflows/reusable-docker.yml
     with:
-      context: create-service
-      dockerfile: create-service/Dockerfile
-      image-name: create-service
+      context: ${{ matrix.service }}
+      dockerfile: ${{ matrix.service }}/Dockerfile
+      image-name: ${{ matrix.service }}
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
