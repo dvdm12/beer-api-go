@@ -253,3 +253,137 @@ func TestFindTop_DescVsAsc(t *testing.T) {
 	assert.Equal(t, beer.Name, resultDesc.Name)
 	assert.Equal(t, beer.Name, resultAsc.Name)
 }
+
+func TestRepoError_Error_WithOperation(t *testing.T) {
+	err := newRepoError(CategoryNotFound, MsgNotFound, OpFind, errors.New("cause"))
+	assert.Equal(t, "[NOT_FOUND] document not found (find): cause", err.Error())
+}
+
+func TestRepoError_Error_WithoutOperation(t *testing.T) {
+	err := &RepoError{Category: CategoryUnknown, Message: MsgUnmapped, Cause: errors.New("cause")}
+	assert.Equal(t, "[UNKNOWN] unmapped mongo error: cause", err.Error())
+}
+
+func TestRepoError_Unwrap(t *testing.T) {
+	cause := errors.New("root cause")
+	err := newRepoError(CategoryTimeout, MsgTimeout, OpFindTop, cause)
+	assert.Equal(t, cause, err.Unwrap())
+}
+
+func TestNoopLogger_Error(t *testing.T) {
+	logger := &noopLogger{}
+	assert.NotPanics(t, func() {
+		logger.Error("test message", "key", "value")
+	})
+}
+
+func TestMapMongoError_Nil(t *testing.T) {
+	assert.Nil(t, MapMongoError(nil, OpFind, CollectionBeers, nil))
+}
+
+func TestMapMongoError_ErrNilCursor(t *testing.T) {
+	err := MapMongoError(mongo.ErrNilCursor, OpFind, CollectionBeers, nil)
+
+	var repoErr *RepoError
+	require.True(t, errors.As(err, &repoErr))
+	assert.Equal(t, CategoryCursor, repoErr.Category)
+	assert.Equal(t, MsgNilCursor, repoErr.Message)
+}
+
+func TestMapMongoError_ErrClientDisconnected(t *testing.T) {
+	err := MapMongoError(mongo.ErrClientDisconnected, OpFind, CollectionBeers, nil)
+
+	var repoErr *RepoError
+	require.True(t, errors.As(err, &repoErr))
+	assert.Equal(t, CategoryNetwork, repoErr.Category)
+	assert.Equal(t, MsgClientDisconn, repoErr.Message)
+}
+
+func TestMapMongoError_CommandError_Timeout(t *testing.T) {
+	cmd := mongo.CommandError{Code: 50, Message: "MaxTimeMSExpired"}
+	err := MapMongoError(cmd, OpFindTop, CollectionBeers, nil)
+
+	var repoErr *RepoError
+	require.True(t, errors.As(err, &repoErr))
+	assert.Equal(t, CategoryTimeout, repoErr.Category)
+	assert.Equal(t, MsgTimeout, repoErr.Message)
+}
+
+func TestMapMongoError_CommandError_ServerInterrupt(t *testing.T) {
+	for _, code := range []int32{11600, 11601} {
+		cmd := mongo.CommandError{Code: code}
+		err := MapMongoError(cmd, OpFind, CollectionBeers, nil)
+
+		var repoErr *RepoError
+		require.True(t, errors.As(err, &repoErr))
+		assert.Equal(t, CategoryNetwork, repoErr.Category)
+		assert.Equal(t, MsgServerInterrupt, repoErr.Message)
+	}
+}
+
+func TestMapMongoError_CommandError_SocketError(t *testing.T) {
+	for _, code := range []int32{9001, 211} {
+		cmd := mongo.CommandError{Code: code}
+		err := MapMongoError(cmd, OpFind, CollectionBeers, nil)
+
+		var repoErr *RepoError
+		require.True(t, errors.As(err, &repoErr))
+		assert.Equal(t, CategoryNetwork, repoErr.Category)
+		assert.Equal(t, MsgSocketError, repoErr.Message)
+	}
+}
+
+func TestMapMongoError_CommandError_Unknown(t *testing.T) {
+	cmd := mongo.CommandError{Code: 999, Message: "some error"}
+	err := MapMongoError(cmd, OpFind, CollectionBeers, nil)
+
+	var repoErr *RepoError
+	require.True(t, errors.As(err, &repoErr))
+	assert.Equal(t, CategoryUnknown, repoErr.Category)
+}
+
+func TestMapByMessage_Timeout(t *testing.T) {
+	for _, msg := range []string{"context deadline exceeded", "timed out", "timeout"} {
+		err := MapMongoError(errors.New(msg), OpFind, CollectionBeers, nil)
+
+		var repoErr *RepoError
+		require.True(t, errors.As(err, &repoErr))
+		assert.Equal(t, CategoryTimeout, repoErr.Category, "pattern: %s", msg)
+	}
+}
+
+func TestMapByMessage_Decode(t *testing.T) {
+	for _, msg := range []string{"cannot decode", "no decoder found"} {
+		err := MapMongoError(errors.New(msg), OpFind, CollectionBeers, nil)
+
+		var repoErr *RepoError
+		require.True(t, errors.As(err, &repoErr))
+		assert.Equal(t, CategoryDecode, repoErr.Category, "pattern: %s", msg)
+	}
+}
+
+func TestMapByMessage_Unknown(t *testing.T) {
+	err := MapMongoError(errors.New("some completely unknown error"), OpFind, CollectionBeers, nil)
+
+	var repoErr *RepoError
+	require.True(t, errors.As(err, &repoErr))
+	assert.Equal(t, CategoryUnknown, repoErr.Category)
+	assert.Equal(t, MsgUnmapped, repoErr.Message)
+}
+
+func TestMapMongoError_WithLogger(t *testing.T) {
+	logged := false
+	logger := &testLogger{onError: func() { logged = true }}
+
+	MapMongoError(errors.New("some error"), OpFind, CollectionBeers, logger)
+
+	assert.True(t, logged)
+}
+
+type testLogger struct {
+	onError func()
+}
+
+func (l *testLogger) Error(_ string, _ ...any) {
+	l.onError()
+}
