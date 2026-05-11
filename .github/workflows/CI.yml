@@ -35,7 +35,7 @@ jobs:
           fi
 
       - id: detect
-        run: bash .github/scripts/detect-services.sh
+        run: bash .github/workflows/scripts/detect-services.sh
 
   tests:
     needs: prepare
