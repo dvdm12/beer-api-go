@@ -1,6 +1,8 @@
 x-service-base: &service-base
   restart: always
   env_file: .env
+  networks:
+    - beer-network
   depends_on:
     mongodb:
       condition: service_healthy
@@ -11,6 +13,8 @@ services:
     container_name: mongodb
     restart: always
     env_file: .env
+    networks:
+      - beer-network
     ports:
       - "27017:27017"
     volumes:
@@ -22,6 +26,37 @@ services:
       timeout: 3s
       retries: 5
       start_period: 5s
+
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    restart: always
+    networks:
+      - beer-network
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    restart: always
+    networks:
+      - beer-network
+    ports:
+      - "8085:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./.env:/var/jenkins_home/workspace/.env
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
 
   create-service:
     <<: *service-base
@@ -116,3 +151,11 @@ services:
 
 volumes:
   mongo_data:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
+  jenkins_data:
+
+networks:
+  beer-network:
+    driver: bridge

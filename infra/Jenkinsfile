@@ -1,0 +1,77 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Test & Coverage') {
+            steps {
+                sh '''
+                    SERVICES="create-service read-service update-service delete-service data-analysis"
+                    for svc in $SERVICES; do
+                        echo "Testing $svc..."
+                        cd $svc
+                        go test ./... -coverprofile=coverage.out
+                        cd ..
+                    done
+                '''
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh '''
+                        SERVICES="create-service read-service update-service delete-service data-analysis"
+                        for svc in $SERVICES; do
+                            sonar-scanner \
+                                -Dsonar.projectKey=beer-api-go-${svc} \
+                                -Dsonar.projectName=${svc} \
+                                -Dsonar.sources=./${svc} \
+                                -Dsonar.exclusions="**/*_test.go,**/vendor/**" \
+                                -Dsonar.tests=./${svc} \
+                                -Dsonar.test.inclusions="**/*_test.go" \
+                                -Dsonar.go.coverage.reportPaths=./${svc}/coverage.out
+                        done
+                    '''
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                waitForQualityGate abortPipeline: true
+            }
+        }
+    }
+
+    post {
+        always {
+            emailext(
+                to: "${GMAIL_USER}",
+                subject: "[Jenkins] ${currentBuild.result}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                mimeType: 'text/html',
+                body: """
+                    <h2>Build Report</h2>
+                    <table>
+                        <tr><td><b>Result</b></td><td>${currentBuild.result}</td></tr>
+                        <tr><td><b>Job</b></td><td>${env.JOB_NAME}</td></tr>
+                        <tr><td><b>Build</b></td><td>#${env.BUILD_NUMBER}</td></tr>
+                        <tr><td><b>Branch</b></td><td>${env.BRANCH_NAME}</td></tr>
+                        <tr><td><b>Duration</b></td><td>${currentBuild.durationString}</td></tr>
+                    </table>
+                    <h3>SonarQube</h3>
+                    <ul>
+                        <li><a href="${SONAR_HOST_URL}/projects">Ver todos los proyectos</a></li>
+                    </ul>
+                    <h3>Logs</h3>
+                    <a href="${env.BUILD_URL}console">Ver logs completos</a>
+                """
+            )
+        }
+    }
+}
