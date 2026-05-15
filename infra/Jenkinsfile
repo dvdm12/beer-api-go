@@ -12,7 +12,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('sonarqube') {
                     sh '''
-                        export PATH=$PATH:/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube Scanner/bin
+                        export PATH=$PATH:/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube_Scanner/bin
                         SERVICES="create-service read-service update-service delete-service data-analysis"
                         for svc in $SERVICES; do
                             echo "Analyzing $svc..."
