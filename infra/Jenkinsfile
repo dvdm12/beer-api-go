@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        SONAR_HOST_URL = 'http://sonarqube:9000'
-        GMAIL_USER     = credentials('GMAIL_USER')
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -43,27 +38,31 @@ pipeline {
 
     post {
         always {
-            emailext(
-                to: "${GMAIL_USER}",
-                subject: "[Jenkins] ${currentBuild.result}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                mimeType: 'text/html',
-                body: """
-                    <h2>Build Report</h2>
-                    <table>
-                        <tr><td><b>Result</b></td><td>${currentBuild.result}</td></tr>
-                        <tr><td><b>Job</b></td><td>${env.JOB_NAME}</td></tr>
-                        <tr><td><b>Build</b></td><td>#${env.BUILD_NUMBER}</td></tr>
-                        <tr><td><b>Branch</b></td><td>${env.BRANCH_NAME}</td></tr>
-                        <tr><td><b>Duration</b></td><td>${currentBuild.durationString}</td></tr>
-                    </table>
-                    <h3>SonarQube</h3>
-                    <ul>
-                        <li><a href="${SONAR_HOST_URL}/projects">Ver todos los proyectos</a></li>
-                    </ul>
-                    <h3>Logs</h3>
-                    <a href="${env.BUILD_URL}console">Ver logs completos</a>
-                """
-            )
+            script {
+                def recipient = env.GMAIL_USER ?: 'dvddavid677@gmail.com'
+                def sonarUrl  = 'http://sonarqube:9000'
+                emailext(
+                    to: recipient,
+                    subject: "[Jenkins] ${currentBuild.result}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    mimeType: 'text/html',
+                    body: """
+                        <h2>Build Report</h2>
+                        <table>
+                            <tr><td><b>Result</b></td><td>${currentBuild.result}</td></tr>
+                            <tr><td><b>Job</b></td><td>${env.JOB_NAME}</td></tr>
+                            <tr><td><b>Build</b></td><td>#${env.BUILD_NUMBER}</td></tr>
+                            <tr><td><b>Branch</b></td><td>${env.BRANCH_NAME}</td></tr>
+                            <tr><td><b>Duration</b></td><td>${currentBuild.durationString}</td></tr>
+                        </table>
+                        <h3>SonarQube</h3>
+                        <ul>
+                            <li><a href="${sonarUrl}/projects">Ver todos los proyectos</a></li>
+                        </ul>
+                        <h3>Logs</h3>
+                        <a href="${env.BUILD_URL}console">Ver logs completos</a>
+                    """
+                )
+            }
         }
     }
 }
