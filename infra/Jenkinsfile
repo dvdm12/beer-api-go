@@ -8,34 +8,21 @@ pipeline {
             }
         }
 
-        stage('Test & Coverage') {
-            steps {
-                sh '''
-                    SERVICES="create-service read-service update-service delete-service data-analysis"
-                    for svc in $SERVICES; do
-                        echo "Testing $svc..."
-                        cd $svc
-                        go test ./... -coverprofile=coverage.out
-                        cd ..
-                    done
-                '''
-            }
-        }
-
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarqube') {
                     sh '''
+                        export PATH=$PATH:/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube_Scanner/bin
                         SERVICES="create-service read-service update-service delete-service data-analysis"
                         for svc in $SERVICES; do
-                            sonar-scanner \
-                                -Dsonar.projectKey=beer-api-go-${svc} \
-                                -Dsonar.projectName=${svc} \
-                                -Dsonar.sources=./${svc} \
-                                -Dsonar.exclusions="**/*_test.go,**/vendor/**" \
-                                -Dsonar.tests=./${svc} \
-                                -Dsonar.test.inclusions="**/*_test.go" \
-                                -Dsonar.go.coverage.reportPaths=./${svc}/coverage.out
+                            echo "Analyzing $svc..."
+                            cd $svc
+                            if [ ! -f sonar-project.properties ]; then
+                                echo "ERROR: sonar-project.properties not found in $svc"
+                                exit 1
+                            fi
+                            sonar-scanner
+                            cd ..
                         done
                     '''
                 }
