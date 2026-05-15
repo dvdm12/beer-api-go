@@ -43,7 +43,9 @@ services:
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
 
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
     container_name: jenkins
     restart: always
     networks:
@@ -54,7 +56,6 @@ services:
     volumes:
       - jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./.env:/var/jenkins_home/workspace/.env
     environment:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
 
