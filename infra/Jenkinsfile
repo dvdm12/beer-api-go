@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        SONAR_HOST_URL = 'http://sonarqube:9000'
+        GMAIL_USER     = credentials('GMAIL_USER')
+    }
+
     stages {
         stage('Checkout') {
             steps {
