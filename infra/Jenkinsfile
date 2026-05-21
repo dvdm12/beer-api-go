@@ -12,18 +12,8 @@ pipeline {
             steps {
                 withSonarQubeEnv('sonarqube') {
                     sh '''
-                        export PATH=$PATH:/var/jenkins_home/tools/hudson.plugins.sonar.SonarRunnerInstallation/SonarQube_Scanner/bin
-                        SERVICES="create-service read-service update-service delete-service data-analysis"
-                        for svc in $SERVICES; do
-                            echo "Analyzing $svc..."
-                            cd $svc
-                            if [ ! -f sonar-project.properties ]; then
-                                echo "ERROR: sonar-project.properties not found in $svc"
-                                exit 1
-                            fi
-                            sonar-scanner
-                            cd ..
-                        done
+                        chmod +x infra/scripts/sonar-analysis.sh
+                        ./infra/scripts/sonar-analysis.sh
                     '''
                 }
             }
@@ -40,27 +30,14 @@ pipeline {
         always {
             script {
                 def recipient = env.GMAIL_USER ?: 'dvddavid677@gmail.com'
-                def sonarUrl  = 'http://sonarqube:9000'
+
+                def html = readFile('infra/templates/email-report.html')
+
                 emailext(
                     to: recipient,
-                    subject: "[Jenkins] ${currentBuild.result}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    subject: "[Jenkins] ${currentBuild.currentResult}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     mimeType: 'text/html',
-                    body: """
-                        <h2>Build Report</h2>
-                        <table>
-                            <tr><td><b>Result</b></td><td>${currentBuild.result}</td></tr>
-                            <tr><td><b>Job</b></td><td>${env.JOB_NAME}</td></tr>
-                            <tr><td><b>Build</b></td><td>#${env.BUILD_NUMBER}</td></tr>
-                            <tr><td><b>Branch</b></td><td>${env.BRANCH_NAME}</td></tr>
-                            <tr><td><b>Duration</b></td><td>${currentBuild.durationString}</td></tr>
-                        </table>
-                        <h3>SonarQube</h3>
-                        <ul>
-                            <li><a href="${sonarUrl}/projects">Ver todos los proyectos</a></li>
-                        </ul>
-                        <h3>Logs</h3>
-                        <a href="${env.BUILD_URL}console">Ver logs completos</a>
-                    """
+                    body: html
                 )
             }
         }
