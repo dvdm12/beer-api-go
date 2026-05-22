@@ -7,16 +7,20 @@ set -e
 
 SERVICES="create-service read-service update-service delete-service data-analysis"
 
+# Packages containing business logic to measure coverage against
+TEST_PACKAGES="./internal/controllers ./internal/services ./internal/repository"
+
+
 for svc in $SERVICES; do
     echo ""
     echo "[coverage] Processing: ${svc}"
 
     cd "$svc"
 
-    # Run tests and generate coverage profile
-    if go test ./... -coverprofile=coverage.out -covermode=atomic 2>/dev/null; then
+    # Run tests only on business logic packages
+    if go test $TEST_PACKAGES -coverprofile=coverage.out -covermode=atomic 2>/dev/null; then
         echo "[coverage] OK - coverage.out generated for ${svc}"
-
+ 
         # Print total coverage summary
         go tool cover -func=coverage.out | grep "^total:" | awk '{print "[coverage] Total:", $3}'
     else
@@ -24,6 +28,6 @@ for svc in $SERVICES; do
         echo "[coverage] WARN - tests failed or no test files found in ${svc}"
         touch coverage.out
     fi
-
+    
     cd ..
 done
