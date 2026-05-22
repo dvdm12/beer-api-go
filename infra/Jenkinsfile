@@ -1,43 +1,92 @@
 pipeline {
     agent any
 
+    environment {
+        SONAR_TOKEN = credentials('sonarqube-credentials')
+    }
+
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
+        // Generates coverage.out per service before scanning
+        stage('Test Coverage') {
+            steps {
+                sh '''
+                    chmod +x infra/scripts/sonar/sonar-coverage.sh
+                    ./infra/scripts/sonar/sonar-coverage.sh
+                '''
+            }
+        }
+
+        // Runs SonarScanner per service using coverage reports
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarqube') {
                     sh '''
-                        chmod +x infra/scripts/sonar-analysis.sh
-                        ./infra/scripts/sonar-analysis.sh
+                        chmod +x infra/scripts/sonar/sonar-analysis.sh
+                        ./infra/scripts/sonar/sonar-analysis.sh
                     '''
                 }
             }
         }
 
+        // Validates Quality Gate per service via SonarQube API
         stage('Quality Gate') {
             steps {
-                waitForQualityGate abortPipeline: true
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh '''
+                        chmod +x infra/scripts/sonar/sonar-gate.sh
+                        ./infra/scripts/sonar/sonar-gate.sh
+                    '''
+                }
             }
         }
+
+        // Fetches all metrics from SonarQube API into /tmp/sonar-metrics.env
+        stage('Fetch Metrics') {
+            steps {
+                sh '''
+                    chmod +x infra/scripts/sonar/sonar-metrics.sh
+                    ./infra/scripts/sonar/sonar-metrics.sh
+                '''
+            }
+        }
+
     }
 
     post {
         always {
             script {
-                def recipient = env.GMAIL_USER ?: 'dvddavid677@gmail.com'
+                // Render HTML report by injecting sonar metrics
+                sh '''
+                    chmod +x infra/scripts/sonar/sonar-report.sh
+                    ./infra/scripts/sonar/sonar-report.sh
+                '''
 
-                def html = readFile('infra/templates/email-report.html')
+                // Read rendered report and inject Jenkins build variables
+                def html = readFile('/tmp/email-report-rendered.html')
 
+                html = html.replace('${BUILD_RESULT}',    currentBuild.currentResult  ?: 'UNKNOWN')
+                html = html.replace('${BUILD_DURATION}',  currentBuild.durationString  ?: 'N/A')
+                html = html.replace('${BRANCH_NAME}',     env.BRANCH_NAME              ?: 'main')
+                html = html.replace('${JOB_NAME}',        env.JOB_NAME                 ?: 'GoBrew')
+                html = html.replace('${BUILD_NUMBER}',    env.BUILD_NUMBER             ?: '0')
+                html = html.replace('${BUILD_URL}',       env.BUILD_URL                ?: '#')
+                html = html.replace('${GIT_COMMIT}',      (env.GIT_COMMIT ?: 'unknown').take(7))
+                html = html.replace('${SONAR_URL}',       'http://localhost:9000')
+                html = html.replace('${BUILD_TIMESTAMP}', new Date().toString())
+
+                // Send email with full metrics report
                 emailext(
-                    to: recipient,
-                    subject: "[Jenkins] ${currentBuild.currentResult}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    to:       'dvddavid677@gmail.com',
+                    subject:  "[Jenkins] ${currentBuild.currentResult}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     mimeType: 'text/html',
-                    body: html
+                    body:     html
                 )
             }
         }
