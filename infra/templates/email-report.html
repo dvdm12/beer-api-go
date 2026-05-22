@@ -5,256 +5,313 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GoBrew CI Report</title>
-    <link rel="stylesheet" href="email-report.css" />
 </head>
 
-<body>
-    <div class="wrap">
+<body style="margin:0; padding:0; background-color:#0d1117; font-family:Arial, Helvetica, sans-serif; color:#c9d1d9;">
 
-        <!-- Header -->
-        <div class="header">
-            <div class="header-top">
-                <div class="logo">GB</div>
-                <div class="header-title">
-                    <h1>GoBrew Pipeline Report</h1>
-                    <p>${JOB_NAME} &middot; #${BUILD_NUMBER}</p>
-                </div>
-            </div>
-            <div class="build-badge badge-${BUILD_RESULT}">
-                <span class="dot"></span>
-                ${BUILD_RESULT}
-            </div>
-        </div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td align="center" style="padding:24px 16px;">
 
-        <!-- Build info -->
-        <div class="section">
-            <div class="section-title">Build Info</div>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">Branch</div>
-                    <div class="info-value">${BRANCH_NAME}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Duration</div>
-                    <div class="info-value">${BUILD_DURATION}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Commit</div>
-                    <div class="info-value">${GIT_COMMIT}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Build URL</div>
-                    <div class="info-value"><a href="${BUILD_URL}">#${BUILD_NUMBER} &rarr;</a></div>
-                </div>
-            </div>
-        </div>
+                <!-- Container -->
+                <table width="620" cellpadding="0" cellspacing="0" border="0"
+                    style="background-color:#161b22; border:1px solid #30363d;">
 
-        <!-- Global SonarQube summary -->
-        <div class="section">
-            <div class="section-title">SonarQube &middot; Global Summary (5 services)</div>
-            <div class="summary-grid">
-                <div class="summary-card">
-                    <div class="summary-val blue">${SONAR_TOTAL_COVERAGE}%</div>
-                    <div class="summary-lbl">avg coverage</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-val red">${SONAR_TOTAL_BUGS}</div>
-                    <div class="summary-lbl">total bugs</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-val red">${SONAR_TOTAL_VULNS}</div>
-                    <div class="summary-lbl">vulnerabilities</div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-val yellow">${SONAR_TOTAL_SMELLS}</div>
-                    <div class="summary-lbl">code smells</div>
-                </div>
-            </div>
-        </div>
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color:#0f172a; padding:28px 32px; border-bottom:1px solid #30363d;">
+                            <p
+                                style="margin:0; font-size:11px; color:#8b949e; letter-spacing:1px; text-transform:uppercase;">
+                                GoBrew CI Pipeline</p>
+                            <h1 style="margin:6px 0 0; font-size:20px; font-weight:700; color:#f0f6fc;">${JOB_NAME}
+                                &nbsp;#${BUILD_NUMBER}</h1>
+                            <p
+                                style="margin:10px 0 0; display:inline-block; padding:4px 14px; background-color:#21262d; color:#c9d1d9; font-size:12px; font-weight:600; border:1px solid #30363d;">
+                                ${BUILD_RESULT} &nbsp;&middot;&nbsp; ${BRANCH_NAME} &nbsp;&middot;&nbsp;
+                                ${BUILD_DURATION}</p>
+                        </td>
+                    </tr>
 
-        <!-- Per-service metrics -->
-        <div class="section">
-            <div class="section-title">SonarQube &middot; Per Service</div>
+                    <!-- Build info -->
+                    <tr>
+                        <td style="padding:24px 32px; border-bottom:1px solid #21262d;">
+                            <p
+                                style="margin:0 0 12px; font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#8b949e;">
+                                Build Info</p>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td width="80" style="padding:6px 0; font-size:12px; color:#8b949e;">Commit</td>
+                                    <td
+                                        style="padding:6px 0; font-size:12px; color:#e6edf3; font-family:'Courier New', monospace;">
+                                        ${GIT_COMMIT}</td>
+                                </tr>
+                                <tr>
+                                    <td width="80"
+                                        style="padding:6px 0; font-size:12px; color:#8b949e; border-top:1px solid #21262d;">
+                                        Branch</td>
+                                    <td
+                                        style="padding:6px 0; font-size:12px; color:#e6edf3; border-top:1px solid #21262d;">
+                                        ${BRANCH_NAME}</td>
+                                </tr>
+                                <tr>
+                                    <td width="80"
+                                        style="padding:6px 0; font-size:12px; color:#8b949e; border-top:1px solid #21262d;">
+                                        Duration</td>
+                                    <td
+                                        style="padding:6px 0; font-size:12px; color:#e6edf3; border-top:1px solid #21262d;">
+                                        ${BUILD_DURATION}</td>
+                                </tr>
+                                <tr>
+                                    <td width="80"
+                                        style="padding:6px 0; font-size:12px; color:#8b949e; border-top:1px solid #21262d;">
+                                        URL</td>
+                                    <td style="padding:6px 0; font-size:12px; border-top:1px solid #21262d;"><a
+                                            href="${BUILD_URL}" style="color:#38bdf8; text-decoration:none;">View build
+                                            &rarr;</a></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
 
-            <!-- create-service -->
-            <div class="service-card">
-                <div class="service-header">
-                    <span class="service-name">create-service</span>
-                    <span class="${SONAR_GATE_CREATE}">${SONAR_GATE_LABEL_CREATE}</span>
-                </div>
-                <div class="metrics-row">
-                    <div class="metric">
-                        <div class="metric-val blue">${SONAR_COV_CREATE}%</div>
-                        <div class="metric-lbl">Coverage</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val red">${SONAR_BUGS_CREATE}</div>
-                        <div class="metric-lbl">Bugs</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val red">${SONAR_VULNS_CREATE}</div>
-                        <div class="metric-lbl">Vulns</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val yellow">${SONAR_SMELLS_CREATE}</div>
-                        <div class="metric-lbl">Smells</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val green">${SONAR_DUPL_CREATE}%</div>
-                        <div class="metric-lbl">Duplication</div>
-                    </div>
-                </div>
-                <div class="cov-bar-wrap">
-                    <div class="cov-bar-fill" style="width:${SONAR_COV_CREATE}%"></div>
-                </div>
-            </div>
+                    <!-- Global summary -->
+                    <tr>
+                        <td style="padding:24px 32px; border-bottom:1px solid #21262d;">
+                            <p
+                                style="margin:0 0 12px; font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#8b949e;">
+                                SonarQube &middot; Global Summary</p>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td align="center" width="25%"
+                                        style="padding:14px 8px; background-color:#0d1117; border:1px solid #21262d;">
+                                        <p style="margin:0; font-size:22px; font-weight:700; color:#38bdf8;">
+                                            ${SONAR_TOTAL_COVERAGE}%</p>
+                                        <p style="margin:4px 0 0; font-size:10px; color:#8b949e;">Coverage</p>
+                                    </td>
+                                    <td width="2%"></td>
+                                    <td align="center" width="25%"
+                                        style="padding:14px 8px; background-color:#0d1117; border:1px solid #21262d;">
+                                        <p style="margin:0; font-size:22px; font-weight:700; color:#f85149;">
+                                            ${SONAR_TOTAL_BUGS}</p>
+                                        <p style="margin:4px 0 0; font-size:10px; color:#8b949e;">Bugs</p>
+                                    </td>
+                                    <td width="2%"></td>
+                                    <td align="center" width="25%"
+                                        style="padding:14px 8px; background-color:#0d1117; border:1px solid #21262d;">
+                                        <p style="margin:0; font-size:22px; font-weight:700; color:#f85149;">
+                                            ${SONAR_TOTAL_VULNS}</p>
+                                        <p style="margin:4px 0 0; font-size:10px; color:#8b949e;">Vulns</p>
+                                    </td>
+                                    <td width="2%"></td>
+                                    <td align="center" width="25%"
+                                        style="padding:14px 8px; background-color:#0d1117; border:1px solid #21262d;">
+                                        <p style="margin:0; font-size:22px; font-weight:700; color:#d29922;">
+                                            ${SONAR_TOTAL_SMELLS}</p>
+                                        <p style="margin:4px 0 0; font-size:10px; color:#8b949e;">Smells</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
 
-            <!-- read-service -->
-            <div class="service-card">
-                <div class="service-header">
-                    <span class="service-name">read-service</span>
-                    <span class="${SONAR_GATE_READ}">${SONAR_GATE_LABEL_READ}</span>
-                </div>
-                <div class="metrics-row">
-                    <div class="metric">
-                        <div class="metric-val blue">${SONAR_COV_READ}%</div>
-                        <div class="metric-lbl">Coverage</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val red">${SONAR_BUGS_READ}</div>
-                        <div class="metric-lbl">Bugs</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val red">${SONAR_VULNS_READ}</div>
-                        <div class="metric-lbl">Vulns</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val yellow">${SONAR_SMELLS_READ}</div>
-                        <div class="metric-lbl">Smells</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val green">${SONAR_DUPL_READ}%</div>
-                        <div class="metric-lbl">Duplication</div>
-                    </div>
-                </div>
-                <div class="cov-bar-wrap">
-                    <div class="cov-bar-fill" style="width:${SONAR_COV_READ}%"></div>
-                </div>
-            </div>
+                    <!-- Per-service metrics -->
+                    <tr>
+                        <td style="padding:24px 32px; border-bottom:1px solid #21262d;">
+                            <p
+                                style="margin:0 0 16px; font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#8b949e;">
+                                SonarQube &middot; Per Service</p>
 
-            <!-- update-service -->
-            <div class="service-card">
-                <div class="service-header">
-                    <span class="service-name">update-service</span>
-                    <span class="${SONAR_GATE_UPDATE}">${SONAR_GATE_LABEL_UPDATE}</span>
-                </div>
-                <div class="metrics-row">
-                    <div class="metric">
-                        <div class="metric-val blue">${SONAR_COV_UPDATE}%</div>
-                        <div class="metric-lbl">Coverage</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val red">${SONAR_BUGS_UPDATE}</div>
-                        <div class="metric-lbl">Bugs</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val red">${SONAR_VULNS_UPDATE}</div>
-                        <div class="metric-lbl">Vulns</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val yellow">${SONAR_SMELLS_UPDATE}</div>
-                        <div class="metric-lbl">Smells</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val green">${SONAR_DUPL_UPDATE}%</div>
-                        <div class="metric-lbl">Duplication</div>
-                    </div>
-                </div>
-                <div class="cov-bar-wrap">
-                    <div class="cov-bar-fill" style="width:${SONAR_COV_UPDATE}%"></div>
-                </div>
-            </div>
+                            <!-- Header row -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
+                                <tr>
+                                    <td width="34%"
+                                        style="padding:6px 8px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
+                                        Service</td>
+                                    <td width="11%" align="center"
+                                        style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
+                                        Gate</td>
+                                    <td width="11%" align="center"
+                                        style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
+                                        Cov %</td>
+                                    <td width="11%" align="center"
+                                        style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
+                                        Bugs</td>
+                                    <td width="11%" align="center"
+                                        style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
+                                        Vulns</td>
+                                    <td width="11%" align="center"
+                                        style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
+                                        Smells</td>
+                                    <td width="11%" align="center"
+                                        style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
+                                        Dupl %</td>
+                                </tr>
+                            </table>
 
-            <!-- delete-service -->
-            <div class="service-card">
-                <div class="service-header">
-                    <span class="service-name">delete-service</span>
-                    <span class="${SONAR_GATE_DELETE}">${SONAR_GATE_LABEL_DELETE}</span>
-                </div>
-                <div class="metrics-row">
-                    <div class="metric">
-                        <div class="metric-val blue">${SONAR_COV_DELETE}%</div>
-                        <div class="metric-lbl">Coverage</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val red">${SONAR_BUGS_DELETE}</div>
-                        <div class="metric-lbl">Bugs</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val red">${SONAR_VULNS_DELETE}</div>
-                        <div class="metric-lbl">Vulns</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val yellow">${SONAR_SMELLS_DELETE}</div>
-                        <div class="metric-lbl">Smells</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val green">${SONAR_DUPL_DELETE}%</div>
-                        <div class="metric-lbl">Duplication</div>
-                    </div>
-                </div>
-                <div class="cov-bar-wrap">
-                    <div class="cov-bar-fill" style="width:${SONAR_COV_DELETE}%"></div>
-                </div>
-            </div>
+                            <!-- create-service -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
+                                <tr style="background-color:#0d1117;">
+                                    <td width="34%"
+                                        style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
+                                        create-service</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:#3fb950;">
+                                        ${SONAR_GATE_LABEL_CREATE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#38bdf8; border:1px solid #21262d;">
+                                        ${SONAR_COV_CREATE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
+                                        ${SONAR_BUGS_CREATE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
+                                        ${SONAR_VULNS_CREATE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#d29922; border:1px solid #21262d;">
+                                        ${SONAR_SMELLS_CREATE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#3fb950; border:1px solid #21262d;">
+                                        ${SONAR_DUPL_CREATE}</td>
+                                </tr>
+                            </table>
 
-            <!-- data-analysis -->
-            <div class="service-card">
-                <div class="service-header">
-                    <span class="service-name">data-analysis</span>
-                    <span class="${SONAR_GATE_ANALYSIS}">${SONAR_GATE_LABEL_ANALYSIS}</span>
-                </div>
-                <div class="metrics-row">
-                    <div class="metric">
-                        <div class="metric-val blue">${SONAR_COV_ANALYSIS}%</div>
-                        <div class="metric-lbl">Coverage</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val red">${SONAR_BUGS_ANALYSIS}</div>
-                        <div class="metric-lbl">Bugs</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val red">${SONAR_VULNS_ANALYSIS}</div>
-                        <div class="metric-lbl">Vulns</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val yellow">${SONAR_SMELLS_ANALYSIS}</div>
-                        <div class="metric-lbl">Smells</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-val green">${SONAR_DUPL_ANALYSIS}%</div>
-                        <div class="metric-lbl">Duplication</div>
-                    </div>
-                </div>
-                <div class="cov-bar-wrap">
-                    <div class="cov-bar-fill" style="width:${SONAR_COV_ANALYSIS}%"></div>
-                </div>
-            </div>
+                            <!-- read-service -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
+                                <tr style="background-color:#0d1117;">
+                                    <td width="34%"
+                                        style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
+                                        read-service</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:#3fb950;">
+                                        ${SONAR_GATE_LABEL_READ}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#38bdf8; border:1px solid #21262d;">
+                                        ${SONAR_COV_READ}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
+                                        ${SONAR_BUGS_READ}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
+                                        ${SONAR_VULNS_READ}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#d29922; border:1px solid #21262d;">
+                                        ${SONAR_SMELLS_READ}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#3fb950; border:1px solid #21262d;">
+                                        ${SONAR_DUPL_READ}</td>
+                                </tr>
+                            </table>
 
-        </div>
+                            <!-- update-service -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
+                                <tr style="background-color:#0d1117;">
+                                    <td width="34%"
+                                        style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
+                                        update-service</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:#3fb950;">
+                                        ${SONAR_GATE_LABEL_UPDATE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#38bdf8; border:1px solid #21262d;">
+                                        ${SONAR_COV_UPDATE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
+                                        ${SONAR_BUGS_UPDATE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
+                                        ${SONAR_VULNS_UPDATE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#d29922; border:1px solid #21262d;">
+                                        ${SONAR_SMELLS_UPDATE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#3fb950; border:1px solid #21262d;">
+                                        ${SONAR_DUPL_UPDATE}</td>
+                                </tr>
+                            </table>
 
-        <!-- Action buttons -->
-        <div class="btn-row">
-            <a class="btn btn-primary" href="${SONAR_URL}/projects">Open SonarQube</a>
-            <a class="btn btn-secondary" href="${BUILD_URL}console">Console Logs</a>
-        </div>
+                            <!-- delete-service -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
+                                <tr style="background-color:#0d1117;">
+                                    <td width="34%"
+                                        style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
+                                        delete-service</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:#3fb950;">
+                                        ${SONAR_GATE_LABEL_DELETE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#38bdf8; border:1px solid #21262d;">
+                                        ${SONAR_COV_DELETE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
+                                        ${SONAR_BUGS_DELETE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
+                                        ${SONAR_VULNS_DELETE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#d29922; border:1px solid #21262d;">
+                                        ${SONAR_SMELLS_DELETE}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#3fb950; border:1px solid #21262d;">
+                                        ${SONAR_DUPL_DELETE}</td>
+                                </tr>
+                            </table>
 
-        <!-- Footer -->
-        <div class="footer">
-            Generated by Jenkins &middot; GoBrew CI Pipeline &middot; ${BUILD_TIMESTAMP}
-        </div>
+                            <!-- data-analysis -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr style="background-color:#0d1117;">
+                                    <td width="34%"
+                                        style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
+                                        data-analysis</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:#3fb950;">
+                                        ${SONAR_GATE_LABEL_ANALYSIS}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#38bdf8; border:1px solid #21262d;">
+                                        ${SONAR_COV_ANALYSIS}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
+                                        ${SONAR_BUGS_ANALYSIS}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
+                                        ${SONAR_VULNS_ANALYSIS}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#d29922; border:1px solid #21262d;">
+                                        ${SONAR_SMELLS_ANALYSIS}</td>
+                                    <td width="11%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#3fb950; border:1px solid #21262d;">
+                                        ${SONAR_DUPL_ANALYSIS}</td>
+                                </tr>
+                            </table>
 
-    </div>
+                        </td>
+                    </tr>
+
+                    <!-- Actions -->
+                    <tr>
+                        <td style="padding:20px 32px; border-bottom:1px solid #21262d;">
+                            <a href="${SONAR_URL}/projects"
+                                style="display:inline-block; padding:9px 18px; background-color:#1f6feb; color:#ffffff; font-size:12px; font-weight:600; text-decoration:none; margin-right:10px;">Open
+                                SonarQube</a>
+                            <a href="${BUILD_URL}console"
+                                style="display:inline-block; padding:9px 18px; background-color:#21262d; color:#c9d1d9; font-size:12px; font-weight:600; text-decoration:none; border:1px solid #30363d;">Console
+                                Logs</a>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td
+                            style="padding:16px 32px; background-color:#0d1117; border-top:1px solid #21262d; text-align:center;">
+                            <p style="margin:0; font-size:11px; color:#8b949e;">Generated by Jenkins &middot; GoBrew CI
+                                Pipeline &middot; ${BUILD_TIMESTAMP}</p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
 </body>
 
 </html>
