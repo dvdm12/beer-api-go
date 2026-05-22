@@ -2,199 +2,258 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jenkins Build Report</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #f4f6f8;
-            font-family: Arial, Helvetica, sans-serif;
-            color: #333333;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 30px auto;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
-
-        .header {
-            background-color: #1f2937;
-            color: #ffffff;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-        }
-
-        .header p {
-            margin: 8px 0 0;
-            font-size: 14px;
-            opacity: 0.85;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 8px 18px;
-            border-radius: 999px;
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .SUCCESS {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .FAILURE {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .UNSTABLE {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-
-        .ABORTED {
-            background-color: #e5e7eb;
-            color: #374151;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            margin-bottom: 30px;
-        }
-
-        th,
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e5e7eb;
-            text-align: left;
-        }
-
-        th {
-            width: 180px;
-            background-color: #f9fafb;
-            font-weight: 600;
-        }
-
-        h2 {
-            margin-top: 0;
-            font-size: 22px;
-            color: #111827;
-        }
-
-        h3 {
-            margin-top: 35px;
-            margin-bottom: 12px;
-            font-size: 18px;
-            color: #111827;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 12px 22px;
-            margin-right: 10px;
-            margin-top: 10px;
-            background-color: #2563eb;
-            color: #ffffff !important;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
-        .button:hover {
-            background-color: #1d4ed8;
-        }
-
-        .footer {
-            background-color: #f9fafb;
-            padding: 20px 30px;
-            font-size: 12px;
-            color: #6b7280;
-            text-align: center;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .muted {
-            color: #6b7280;
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GoBrew CI Report</title>
+    <link rel="stylesheet" href="email-report.css" />
 </head>
 
 <body>
-    <div class="container">
+    <div class="wrap">
+
+        <!-- Header -->
         <div class="header">
-            <h1>Jenkins Build Report</h1>
-            <p>Continuous Integration Pipeline Notification</p>
-        </div>
-
-        <div class="content">
-            <h2>Build Summary</h2>
-
-            <div class="status ${BUILD_RESULT}">
+            <div class="header-top">
+                <div class="logo">GB</div>
+                <div class="header-title">
+                    <h1>GoBrew Pipeline Report</h1>
+                    <p>${JOB_NAME} &middot; #${BUILD_NUMBER}</p>
+                </div>
+            </div>
+            <div class="build-badge badge-${BUILD_RESULT}">
+                <span class="dot"></span>
                 ${BUILD_RESULT}
             </div>
-
-            <table>
-                <tr>
-                    <th>Job</th>
-                    <td>${JOB_NAME}</td>
-                </tr>
-                <tr>
-                    <th>Build Number</th>
-                    <td>#${BUILD_NUMBER}</td>
-                </tr>
-                <tr>
-                    <th>Branch</th>
-                    <td>${BRANCH_NAME}</td>
-                </tr>
-                <tr>
-                    <th>Duration</th>
-                    <td>${BUILD_DURATION}</td>
-                </tr>
-                <tr>
-                    <th>Build URL</th>
-                    <td>
-                        <a href="${BUILD_URL}">${BUILD_URL}</a>
-                    </td>
-                </tr>
-            </table>
-
-            <h3>Code Quality</h3>
-            <p class="muted">
-                Access SonarQube to review coverage, bugs, vulnerabilities,
-                code smells, duplicated code, and technical debt.
-            </p>
-
-            <a class="button" href="${SONAR_URL}/projects">
-                Open SonarQube
-            </a>
-
-            <a class="button" href="${BUILD_URL}console">
-                View Console Logs
-            </a>
         </div>
 
+        <!-- Build info -->
+        <div class="section">
+            <div class="section-title">Build Info</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Branch</div>
+                    <div class="info-value">${BRANCH_NAME}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Duration</div>
+                    <div class="info-value">${BUILD_DURATION}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Commit</div>
+                    <div class="info-value">${GIT_COMMIT}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Build URL</div>
+                    <div class="info-value"><a href="${BUILD_URL}">#${BUILD_NUMBER} &rarr;</a></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Global SonarQube summary -->
+        <div class="section">
+            <div class="section-title">SonarQube &middot; Global Summary (5 services)</div>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-val blue">${SONAR_TOTAL_COVERAGE}%</div>
+                    <div class="summary-lbl">avg coverage</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-val red">${SONAR_TOTAL_BUGS}</div>
+                    <div class="summary-lbl">total bugs</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-val red">${SONAR_TOTAL_VULNS}</div>
+                    <div class="summary-lbl">vulnerabilities</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-val yellow">${SONAR_TOTAL_SMELLS}</div>
+                    <div class="summary-lbl">code smells</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Per-service metrics -->
+        <div class="section">
+            <div class="section-title">SonarQube &middot; Per Service</div>
+
+            <!-- create-service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <span class="service-name">create-service</span>
+                    <span class="${SONAR_GATE_CREATE}">${SONAR_GATE_LABEL_CREATE}</span>
+                </div>
+                <div class="metrics-row">
+                    <div class="metric">
+                        <div class="metric-val blue">${SONAR_COV_CREATE}%</div>
+                        <div class="metric-lbl">Coverage</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val red">${SONAR_BUGS_CREATE}</div>
+                        <div class="metric-lbl">Bugs</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val red">${SONAR_VULNS_CREATE}</div>
+                        <div class="metric-lbl">Vulns</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val yellow">${SONAR_SMELLS_CREATE}</div>
+                        <div class="metric-lbl">Smells</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val green">${SONAR_DUPL_CREATE}%</div>
+                        <div class="metric-lbl">Duplication</div>
+                    </div>
+                </div>
+                <div class="cov-bar-wrap">
+                    <div class="cov-bar-fill" style="width:${SONAR_COV_CREATE}%"></div>
+                </div>
+            </div>
+
+            <!-- read-service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <span class="service-name">read-service</span>
+                    <span class="${SONAR_GATE_READ}">${SONAR_GATE_LABEL_READ}</span>
+                </div>
+                <div class="metrics-row">
+                    <div class="metric">
+                        <div class="metric-val blue">${SONAR_COV_READ}%</div>
+                        <div class="metric-lbl">Coverage</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val red">${SONAR_BUGS_READ}</div>
+                        <div class="metric-lbl">Bugs</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val red">${SONAR_VULNS_READ}</div>
+                        <div class="metric-lbl">Vulns</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val yellow">${SONAR_SMELLS_READ}</div>
+                        <div class="metric-lbl">Smells</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val green">${SONAR_DUPL_READ}%</div>
+                        <div class="metric-lbl">Duplication</div>
+                    </div>
+                </div>
+                <div class="cov-bar-wrap">
+                    <div class="cov-bar-fill" style="width:${SONAR_COV_READ}%"></div>
+                </div>
+            </div>
+
+            <!-- update-service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <span class="service-name">update-service</span>
+                    <span class="${SONAR_GATE_UPDATE}">${SONAR_GATE_LABEL_UPDATE}</span>
+                </div>
+                <div class="metrics-row">
+                    <div class="metric">
+                        <div class="metric-val blue">${SONAR_COV_UPDATE}%</div>
+                        <div class="metric-lbl">Coverage</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val red">${SONAR_BUGS_UPDATE}</div>
+                        <div class="metric-lbl">Bugs</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val red">${SONAR_VULNS_UPDATE}</div>
+                        <div class="metric-lbl">Vulns</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val yellow">${SONAR_SMELLS_UPDATE}</div>
+                        <div class="metric-lbl">Smells</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val green">${SONAR_DUPL_UPDATE}%</div>
+                        <div class="metric-lbl">Duplication</div>
+                    </div>
+                </div>
+                <div class="cov-bar-wrap">
+                    <div class="cov-bar-fill" style="width:${SONAR_COV_UPDATE}%"></div>
+                </div>
+            </div>
+
+            <!-- delete-service -->
+            <div class="service-card">
+                <div class="service-header">
+                    <span class="service-name">delete-service</span>
+                    <span class="${SONAR_GATE_DELETE}">${SONAR_GATE_LABEL_DELETE}</span>
+                </div>
+                <div class="metrics-row">
+                    <div class="metric">
+                        <div class="metric-val blue">${SONAR_COV_DELETE}%</div>
+                        <div class="metric-lbl">Coverage</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val red">${SONAR_BUGS_DELETE}</div>
+                        <div class="metric-lbl">Bugs</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val red">${SONAR_VULNS_DELETE}</div>
+                        <div class="metric-lbl">Vulns</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val yellow">${SONAR_SMELLS_DELETE}</div>
+                        <div class="metric-lbl">Smells</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val green">${SONAR_DUPL_DELETE}%</div>
+                        <div class="metric-lbl">Duplication</div>
+                    </div>
+                </div>
+                <div class="cov-bar-wrap">
+                    <div class="cov-bar-fill" style="width:${SONAR_COV_DELETE}%"></div>
+                </div>
+            </div>
+
+            <!-- data-analysis -->
+            <div class="service-card">
+                <div class="service-header">
+                    <span class="service-name">data-analysis</span>
+                    <span class="${SONAR_GATE_ANALYSIS}">${SONAR_GATE_LABEL_ANALYSIS}</span>
+                </div>
+                <div class="metrics-row">
+                    <div class="metric">
+                        <div class="metric-val blue">${SONAR_COV_ANALYSIS}%</div>
+                        <div class="metric-lbl">Coverage</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val red">${SONAR_BUGS_ANALYSIS}</div>
+                        <div class="metric-lbl">Bugs</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val red">${SONAR_VULNS_ANALYSIS}</div>
+                        <div class="metric-lbl">Vulns</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val yellow">${SONAR_SMELLS_ANALYSIS}</div>
+                        <div class="metric-lbl">Smells</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-val green">${SONAR_DUPL_ANALYSIS}%</div>
+                        <div class="metric-lbl">Duplication</div>
+                    </div>
+                </div>
+                <div class="cov-bar-wrap">
+                    <div class="cov-bar-fill" style="width:${SONAR_COV_ANALYSIS}%"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Action buttons -->
+        <div class="btn-row">
+            <a class="btn btn-primary" href="${SONAR_URL}/projects">Open SonarQube</a>
+            <a class="btn btn-secondary" href="${BUILD_URL}console">Console Logs</a>
+        </div>
+
+        <!-- Footer -->
         <div class="footer">
-            This email was automatically generated by Jenkins.
+            Generated by Jenkins &middot; GoBrew CI Pipeline &middot; ${BUILD_TIMESTAMP}
         </div>
+
     </div>
 </body>
 
