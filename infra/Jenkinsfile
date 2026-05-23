@@ -64,7 +64,7 @@ pipeline {
                     newman run infra/collections/Beer-Collection.postman_collection.json \
                         --reporters cli,json,junitfull \
                         --reporter-json-export /tmp/newman-results.json \
-                        --reporter-junitfull-export /tmp/newman-results.xml
+                        --reporter-junitfull-export newman-results.xml
                 '''
             }
             post {
@@ -74,7 +74,7 @@ pipeline {
                         chmod +x infra/scripts/newman/newman-report.sh
                         ./infra/scripts/newman/newman-report.sh
                     '''
-                    junit '/tmp/newman-results.xml'
+                    junit allowEmptyResults: true, testResults: 'newman-results.xml'
                 }
             }
         }
