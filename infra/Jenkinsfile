@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers{
+        cron('H * * * *')
+    }
+
     environment {
         SONAR_TOKEN = credentials('sonarqube-credentials')
     }
