@@ -15,6 +15,12 @@ RUN apt-get update && \
     unzip /tmp/sonar-scanner.zip -d /opt && \
     ln -sf /opt/sonar-scanner-7.1.0.4889-linux-x64/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
     rm /tmp/sonar-scanner.zip && \
+    \
+    # Install Node.js 20 and Newman
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g newman newman-reporter-junitfull && \
+    \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
