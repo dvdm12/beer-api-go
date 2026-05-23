@@ -57,21 +57,43 @@ pipeline {
             }
         }
 
+        // Runs Postman black-box tests via Newman
+        stage('Black-box Tests') {
+            steps {
+                sh '''
+                    newman run infra/collections/Beer-Collection.postman_collection.json \
+                        --reporters cli,json,junitfull \
+                        --reporter-json-export /tmp/newman-results.json \
+                        --reporter-junitfull-export /tmp/newman-results.xml
+                '''
+            }
+            post {
+                always {
+                    // Parse Newman results and append to metrics file
+                    sh '''
+                        chmod +x infra/scripts/newman/newman-report.sh
+                        ./infra/scripts/newman/newman-report.sh
+                    '''
+                    junit '/tmp/newman-results.xml'
+                }
+            }
+        }
+
     }
 
     post {
         always {
             script {
-                // Render HTML report by injecting sonar metrics
+                // Orchestrate full HTML report from sonar and newman metrics
                 sh '''
-                    chmod +x infra/scripts/sonar/sonar-report.sh
-                    ./infra/scripts/sonar/sonar-report.sh
+                    chmod +x infra/scripts/build-report.sh
+                    ./infra/scripts/build-report.sh
                 '''
 
                 // Read rendered report and inject Jenkins build variables
                 def html = readFile('/tmp/email-report-rendered.html')
 
-                html = html.replace('${BUILD_RESULT}',    currentBuild.currentResult  ?: 'UNKNOWN')
+                html = html.replace('${BUILD_RESULT}',    currentBuild.currentResult   ?: 'UNKNOWN')
                 html = html.replace('${BUILD_DURATION}',  currentBuild.durationString  ?: 'N/A')
                 html = html.replace('${BRANCH_NAME}',     env.BRANCH_NAME              ?: 'main')
                 html = html.replace('${JOB_NAME}',        env.JOB_NAME                 ?: 'GoBrew')

@@ -1,35 +1,32 @@
 #!/bin/bash
 # sonar-report.sh
-# Reads metrics from /tmp/sonar-metrics.env and injects all placeholder
-# values into the HTML email template, producing a rendered output file.
+# Reads SonarQube metrics from /tmp/sonar-metrics.env and injects
+# only SonarQube-related placeholders into the HTML template.
+# Output is written to /tmp/sonar-report-partial.html.
 
 set -e
 
 TEMPLATE="infra/templates/email-report.html"
 METRICS_FILE="/tmp/sonar-metrics.env"
-OUTPUT="/tmp/email-report-rendered.html"
+OUTPUT="/tmp/sonar-report-partial.html"
 
-# Validate inputs
 if [ ! -f "$TEMPLATE" ]; then
-    echo "[report] ERROR - template not found: ${TEMPLATE}"
+    echo "[sonar-report] ERROR - template not found: ${TEMPLATE}"
     exit 1
 fi
 
 if [ ! -f "$METRICS_FILE" ]; then
-    echo "[report] ERROR - metrics file not found: ${METRICS_FILE}"
-    echo "[report] Run sonar-metrics.sh before this script"
+    echo "[sonar-report] ERROR - metrics file not found: ${METRICS_FILE}"
     exit 1
 fi
 
-# Copy template to output
 cp "$TEMPLATE" "$OUTPUT"
 
-# Load and inject all sonar metric variables
+# Inject only SonarQube and coverage variables
 while IFS='=' read -r key value; do
-    # Skip empty lines and comments
     [[ -z "$key" || "$key" == \#* ]] && continue
+    [[ "$key" == NEWMAN_* ]] && continue
     sed -i "s|\${${key}}|${value}|g" "$OUTPUT"
 done < "$METRICS_FILE"
 
-echo "[report] Metrics injected from ${METRICS_FILE}"
-echo "[report] Report written to ${OUTPUT}"
+echo "[sonar-report] SonarQube metrics injected into ${OUTPUT}"
