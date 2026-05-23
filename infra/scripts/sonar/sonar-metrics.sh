@@ -1,7 +1,8 @@
 #!/bin/bash
 # sonar-metrics.sh
 # Fetches code quality metrics from the SonarQube API for each microservice.
-# Writes all values to /tmp/sonar-metrics.env for use in sonar-report.sh.
+# Appends all values to /tmp/sonar-metrics.env for use in sonar-report.sh.
+# Note: file is initialized by sonar-coverage.sh — do not clear it here.
 
 set -e
 
@@ -16,9 +17,6 @@ declare -A PROJECT_KEY=(
     [delete]="beer-api-go-delete-service"
     [analysis]="beer-api-go-data-analysis"
 )
-
-# Clear output file
-> "$OUTPUT_FILE"
 
 TOTAL_COV=0
 TOTAL_BUGS=0
@@ -94,7 +92,7 @@ for svc in create read update delete analysis; do
     COV_R=$(printf "%.1f"  "$COV"  2>/dev/null || echo "0.0")
     DUPL_R=$(printf "%.1f" "$DUPL" 2>/dev/null || echo "0.0")
 
-    # Write per-service variables to env file
+    # Append per-service variables to env file
     echo "SONAR_COV_${SVC_UPPER}=${COV_R}"            >> "$OUTPUT_FILE"
     echo "SONAR_BUGS_${SVC_UPPER}=${BUGS}"             >> "$OUTPUT_FILE"
     echo "SONAR_VULNS_${SVC_UPPER}=${VULNS}"           >> "$OUTPUT_FILE"
@@ -114,7 +112,7 @@ for svc in create read update delete analysis; do
     echo "[metrics] OK - ${svc}: cov=${COV_R}% bugs=${BUGS} vulns=${VULNS} smells=${SMELLS}"
 done
 
-# Write global summary to env file
+# Append global summary to env file
 AVG_COV=$(awk "BEGIN {printf \"%.1f\", $TOTAL_COV / $SVC_COUNT}")
 echo "SONAR_TOTAL_COVERAGE=${AVG_COV}"    >> "$OUTPUT_FILE"
 echo "SONAR_TOTAL_BUGS=${TOTAL_BUGS}"     >> "$OUTPUT_FILE"

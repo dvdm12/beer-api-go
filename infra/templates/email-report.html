@@ -14,7 +14,7 @@
             <td align="center" style="padding:24px 16px;">
 
                 <!-- Container -->
-                <table width="620" cellpadding="0" cellspacing="0" border="0"
+                <table width="660" cellpadding="0" cellspacing="0" border="0"
                     style="background-color:#161b22; border:1px solid #30363d;">
 
                     <!-- Header -->
@@ -81,28 +81,35 @@
                                 SonarQube &middot; Global Summary</p>
                             <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                 <tr>
-                                    <td align="center" width="25%"
+                                    <td align="center" width="19%"
+                                        style="padding:14px 8px; background-color:#0d1117; border:1px solid #21262d;">
+                                        <p style="margin:0; font-size:22px; font-weight:700; color:#e6edf3;">
+                                            ${SONAR_TOTAL_TESTS}</p>
+                                        <p style="margin:4px 0 0; font-size:10px; color:#8b949e;">Tests</p>
+                                    </td>
+                                    <td width="1%"></td>
+                                    <td align="center" width="19%"
                                         style="padding:14px 8px; background-color:#0d1117; border:1px solid #21262d;">
                                         <p style="margin:0; font-size:22px; font-weight:700; color:#38bdf8;">
                                             ${SONAR_TOTAL_COVERAGE}%</p>
                                         <p style="margin:4px 0 0; font-size:10px; color:#8b949e;">Coverage</p>
                                     </td>
-                                    <td width="2%"></td>
-                                    <td align="center" width="25%"
+                                    <td width="1%"></td>
+                                    <td align="center" width="19%"
                                         style="padding:14px 8px; background-color:#0d1117; border:1px solid #21262d;">
                                         <p style="margin:0; font-size:22px; font-weight:700; color:#f85149;">
                                             ${SONAR_TOTAL_BUGS}</p>
                                         <p style="margin:4px 0 0; font-size:10px; color:#8b949e;">Bugs</p>
                                     </td>
-                                    <td width="2%"></td>
-                                    <td align="center" width="25%"
+                                    <td width="1%"></td>
+                                    <td align="center" width="19%"
                                         style="padding:14px 8px; background-color:#0d1117; border:1px solid #21262d;">
                                         <p style="margin:0; font-size:22px; font-weight:700; color:#f85149;">
                                             ${SONAR_TOTAL_VULNS}</p>
                                         <p style="margin:4px 0 0; font-size:10px; color:#8b949e;">Vulns</p>
                                     </td>
-                                    <td width="2%"></td>
-                                    <td align="center" width="25%"
+                                    <td width="1%"></td>
+                                    <td align="center" width="19%"
                                         style="padding:14px 8px; background-color:#0d1117; border:1px solid #21262d;">
                                         <p style="margin:0; font-size:22px; font-weight:700; color:#d29922;">
                                             ${SONAR_TOTAL_SMELLS}</p>
@@ -123,25 +130,28 @@
                             <!-- Header row -->
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
                                 <tr>
-                                    <td width="34%"
+                                    <td width="27%"
                                         style="padding:6px 8px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
                                         Service</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
                                         Gate</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
+                                        style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
+                                        Tests</td>
+                                    <td width="9%" align="center"
                                         style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
                                         Cov %</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
                                         Bugs</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
                                         Vulns</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
                                         Smells</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
                                         Dupl %</td>
                                 </tr>
@@ -150,25 +160,28 @@
                             <!-- create-service -->
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
                                 <tr style="background-color:#0d1117;">
-                                    <td width="34%"
+                                    <td width="27%"
                                         style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
                                         create-service</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:#3fb950;">
                                         ${SONAR_GATE_LABEL_CREATE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#e6edf3; border:1px solid #21262d;">
+                                        ${SONAR_TESTS_CREATE}</td>
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#38bdf8; border:1px solid #21262d;">
                                         ${SONAR_COV_CREATE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
                                         ${SONAR_BUGS_CREATE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
                                         ${SONAR_VULNS_CREATE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#d29922; border:1px solid #21262d;">
                                         ${SONAR_SMELLS_CREATE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#3fb950; border:1px solid #21262d;">
                                         ${SONAR_DUPL_CREATE}</td>
                                 </tr>
@@ -177,25 +190,28 @@
                             <!-- read-service -->
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
                                 <tr style="background-color:#0d1117;">
-                                    <td width="34%"
+                                    <td width="27%"
                                         style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
                                         read-service</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:#3fb950;">
                                         ${SONAR_GATE_LABEL_READ}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#e6edf3; border:1px solid #21262d;">
+                                        ${SONAR_TESTS_READ}</td>
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#38bdf8; border:1px solid #21262d;">
                                         ${SONAR_COV_READ}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
                                         ${SONAR_BUGS_READ}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
                                         ${SONAR_VULNS_READ}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#d29922; border:1px solid #21262d;">
                                         ${SONAR_SMELLS_READ}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#3fb950; border:1px solid #21262d;">
                                         ${SONAR_DUPL_READ}</td>
                                 </tr>
@@ -204,25 +220,28 @@
                             <!-- update-service -->
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
                                 <tr style="background-color:#0d1117;">
-                                    <td width="34%"
+                                    <td width="27%"
                                         style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
                                         update-service</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:#3fb950;">
                                         ${SONAR_GATE_LABEL_UPDATE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#e6edf3; border:1px solid #21262d;">
+                                        ${SONAR_TESTS_UPDATE}</td>
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#38bdf8; border:1px solid #21262d;">
                                         ${SONAR_COV_UPDATE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
                                         ${SONAR_BUGS_UPDATE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
                                         ${SONAR_VULNS_UPDATE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#d29922; border:1px solid #21262d;">
                                         ${SONAR_SMELLS_UPDATE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#3fb950; border:1px solid #21262d;">
                                         ${SONAR_DUPL_UPDATE}</td>
                                 </tr>
@@ -231,25 +250,28 @@
                             <!-- delete-service -->
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
                                 <tr style="background-color:#0d1117;">
-                                    <td width="34%"
+                                    <td width="27%"
                                         style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
                                         delete-service</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:#3fb950;">
                                         ${SONAR_GATE_LABEL_DELETE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#e6edf3; border:1px solid #21262d;">
+                                        ${SONAR_TESTS_DELETE}</td>
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#38bdf8; border:1px solid #21262d;">
                                         ${SONAR_COV_DELETE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
                                         ${SONAR_BUGS_DELETE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
                                         ${SONAR_VULNS_DELETE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#d29922; border:1px solid #21262d;">
                                         ${SONAR_SMELLS_DELETE}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#3fb950; border:1px solid #21262d;">
                                         ${SONAR_DUPL_DELETE}</td>
                                 </tr>
@@ -258,25 +280,28 @@
                             <!-- data-analysis -->
                             <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                 <tr style="background-color:#0d1117;">
-                                    <td width="34%"
+                                    <td width="27%"
                                         style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
                                         data-analysis</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:#3fb950;">
                                         ${SONAR_GATE_LABEL_ANALYSIS}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
+                                        style="padding:10px 4px; font-size:12px; color:#e6edf3; border:1px solid #21262d;">
+                                        ${SONAR_TESTS_ANALYSIS}</td>
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#38bdf8; border:1px solid #21262d;">
                                         ${SONAR_COV_ANALYSIS}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
                                         ${SONAR_BUGS_ANALYSIS}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#f85149; border:1px solid #21262d;">
                                         ${SONAR_VULNS_ANALYSIS}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#d29922; border:1px solid #21262d;">
                                         ${SONAR_SMELLS_ANALYSIS}</td>
-                                    <td width="11%" align="center"
+                                    <td width="9%" align="center"
                                         style="padding:10px 4px; font-size:12px; color:#3fb950; border:1px solid #21262d;">
                                         ${SONAR_DUPL_ANALYSIS}</td>
                                 </tr>
