@@ -27,10 +27,11 @@ else
     BUILD_LOG="No log available"
 fi
 
-# Write log to a temp file and use awk to inject — avoids sed delimiter issues
-awk -v log="$BUILD_LOG" '{
+# Write log to temp file and use awk to inject
+# Note: use 'content' instead of 'log' to avoid awk reserved keyword conflict
+awk -v content="$BUILD_LOG" '{
     if (index($0, "${BUILD_LOG}") > 0) {
-        gsub(/\$\{BUILD_LOG\}/, log)
+        gsub(/\$\{BUILD_LOG\}/, content)
     }
     print
 }' "$OUTPUT" > /tmp/email-failure-tmp.html && mv /tmp/email-failure-tmp.html "$OUTPUT"
@@ -49,7 +50,7 @@ elif grep -q "AssertionError\|newman.*failed" "$LOG_FILE" 2>/dev/null; then
     FAILED_STAGE="Black-box Tests"
 fi
 
-sed -i "s|\${FAILED_STAGE}|${FAILED_STAGE}|g"        "$OUTPUT"
+sed -i "s|\${FAILED_STAGE}|${FAILED_STAGE}|g"               "$OUTPUT"
 sed -i "s|\${FAILURE_CAUSE}|Check console log for details|g" "$OUTPUT"
 
 # Detect stage results from log
