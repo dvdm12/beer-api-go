@@ -180,7 +180,7 @@ func TestCreateService_CreateBeer_ExistsDBError(t *testing.T) {
 	assert.False(t, mock.createCalled)
 }
 
-func testFake(t *testing.T) {
+func TestFake(t *testing.T) {
 	t.Fatal("force failure")
 }
 
