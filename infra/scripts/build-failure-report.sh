@@ -1,6 +1,6 @@
 #!/bin/bash
 # build-failure-report.sh
-# Generates the failure HTML report by reading the Jenkins build log
+# Generates the failure HTML email report by reading the Jenkins build log
 # and injecting stage statuses into the email-failure.html template.
 
 set -e
@@ -14,53 +14,69 @@ if [ ! -f "$TEMPLATE" ]; then
     exit 1
 fi
 
-if [ ! -f "$LOG_FILE" ]; then
-    echo "[failure-report] WARN - build log not found, using empty trace"
-    touch "$LOG_FILE"
-fi
-
 cp "$TEMPLATE" "$OUTPUT"
 
-# Inject build log as error trace (last 60 lines)
-BUILD_LOG=$(tail -60 "$LOG_FILE" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
-sed -i "s|\${BUILD_LOG}|${BUILD_LOG}|g" "$OUTPUT"
+# Read log and escape HTML special characters
+if [ -f "$LOG_FILE" ]; then
+    BUILD_LOG=$(cat "$LOG_FILE" \
+        | sed 's/&/\&amp;/g' \
+        | sed 's/</\&lt;/g' \
+        | sed 's/>/\&gt;/g' \
+        | sed 's/"/\&quot;/g')
+else
+    BUILD_LOG="No log available"
+fi
+
+# Write log to a temp file and use awk to inject — avoids sed delimiter issues
+awk -v log="$BUILD_LOG" '{
+    if (index($0, "${BUILD_LOG}") > 0) {
+        gsub(/\$\{BUILD_LOG\}/, log)
+    }
+    print
+}' "$OUTPUT" > /tmp/email-failure-tmp.html && mv /tmp/email-failure-tmp.html "$OUTPUT"
 
 # Detect failed stage from log
 FAILED_STAGE="Unknown"
-for stage in "Test Coverage" "SonarQube Analysis" "Quality Gate" "Fetch Metrics" "Black-box Tests"; do
-    if grep -q "stage.*${stage}.*failed\|${stage}.*ERROR\|${stage}.*exit code" "$LOG_FILE" 2>/dev/null; then
-        FAILED_STAGE="$stage"
-        break
-    fi
-done
+if grep -q "\[coverage\].*ERROR" "$LOG_FILE" 2>/dev/null; then
+    FAILED_STAGE="Test Coverage"
+elif grep -q "\[analysis\].*ERROR\|EXECUTION FAILURE" "$LOG_FILE" 2>/dev/null; then
+    FAILED_STAGE="SonarQube Analysis"
+elif grep -q "\[gate\].*FAILED\|Quality Gate failed" "$LOG_FILE" 2>/dev/null; then
+    FAILED_STAGE="Quality Gate"
+elif grep -q "\[metrics\].*ERROR" "$LOG_FILE" 2>/dev/null; then
+    FAILED_STAGE="Fetch Metrics"
+elif grep -q "AssertionError\|newman.*failed" "$LOG_FILE" 2>/dev/null; then
+    FAILED_STAGE="Black-box Tests"
+fi
 
-sed -i "s|\${FAILED_STAGE}|${FAILED_STAGE}|g" "$OUTPUT"
+sed -i "s|\${FAILED_STAGE}|${FAILED_STAGE}|g"        "$OUTPUT"
 sed -i "s|\${FAILURE_CAUSE}|Check console log for details|g" "$OUTPUT"
 
 # Detect stage results from log
 detect_stage() {
-    local stage_name="$1"
-    local key="$2"
+    local key="$1"
+    local pass_pattern="$2"
+    local fail_pattern="$3"
 
-    if grep -q "\[${stage_name}\].*OK\|stage.*${stage_name}.*completed" "$LOG_FILE" 2>/dev/null; then
-        sed -i "s|\${${key}_RESULT}|Passed|g" "$OUTPUT"
-        sed -i "s|\${${key}_COLOR}|#3fb950|g" "$OUTPUT"
-        sed -i "s|\${${key}_STATUS}|&#10003;|g" "$OUTPUT"
-    elif grep -q "\[${stage_name}\].*ERROR\|stage.*${stage_name}.*failed" "$LOG_FILE" 2>/dev/null; then
-        sed -i "s|\${${key}_RESULT}|Failed|g" "$OUTPUT"
-        sed -i "s|\${${key}_COLOR}|#f85149|g" "$OUTPUT"
+    if grep -q "$fail_pattern" "$LOG_FILE" 2>/dev/null; then
+        sed -i "s|\${${key}_RESULT}|Failed|g"   "$OUTPUT"
+        sed -i "s|\${${key}_COLOR}|#f85149|g"   "$OUTPUT"
         sed -i "s|\${${key}_STATUS}|&#10007;|g" "$OUTPUT"
+    elif grep -q "$pass_pattern" "$LOG_FILE" 2>/dev/null; then
+        sed -i "s|\${${key}_RESULT}|Passed|g"   "$OUTPUT"
+        sed -i "s|\${${key}_COLOR}|#3fb950|g"   "$OUTPUT"
+        sed -i "s|\${${key}_STATUS}|&#10003;|g" "$OUTPUT"
     else
-        sed -i "s|\${${key}_RESULT}|Skipped|g" "$OUTPUT"
-        sed -i "s|\${${key}_COLOR}|#8b949e|g" "$OUTPUT"
-        sed -i "s|\${${key}_STATUS}|&mdash;|g" "$OUTPUT"
+        sed -i "s|\${${key}_RESULT}|Skipped|g"  "$OUTPUT"
+        sed -i "s|\${${key}_COLOR}|#8b949e|g"   "$OUTPUT"
+        sed -i "s|\${${key}_STATUS}|\&mdash;|g" "$OUTPUT"
     fi
 }
 
-detect_stage "coverage" "STAGE_COVERAGE"
-detect_stage "analysis" "STAGE_SONAR"
-detect_stage "gate"     "STAGE_GATE"
-detect_stage "metrics"  "STAGE_METRICS"
-detect_stage "newman"   "STAGE_NEWMAN"
+detect_stage "STAGE_COVERAGE" "\[coverage\] Total:"          "\[coverage\] ERROR"
+detect_stage "STAGE_SONAR"    "\[analysis\] OK"              "EXECUTION FAILURE"
+detect_stage "STAGE_GATE"     "\[gate\] All services passed" "\[gate\] ERROR"
+detect_stage "STAGE_METRICS"  "\[metrics\] All metrics"      "\[metrics\] ERROR"
+detect_stage "STAGE_NEWMAN"   "newman.*passed"               "AssertionError"
 
 echo "[failure-report] Failure report ready at ${OUTPUT}"
