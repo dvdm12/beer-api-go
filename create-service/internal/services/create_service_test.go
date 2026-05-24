@@ -48,7 +48,6 @@ func TestCreateService_CreateBeer_Success(t *testing.T) {
 	assert.True(t, mock.createCalled)
 }
 
-
 func TestCreateService_CreateBeer_EmptyName(t *testing.T) {
 	mock := &mockRepo{}
 	service := NewCreateService(mock)
@@ -96,8 +95,8 @@ func TestCreateService_CreateBeer_AlcoholOutOfRange(t *testing.T) {
 	appErr, ok := err.(errors.AppError)
 	assert.True(t, ok)
 	assert.Equal(t, errors.CodeInvalidInput, appErr.Code())
-	assert.Contains(t, appErr.Error(), 
-	fmt.Sprintf("alcohol percentage must be between %.1f and %.1f", MinAlcohol, MaxAlcohol))
+	assert.Contains(t, appErr.Error(),
+		fmt.Sprintf("alcohol percentage must be between %.1f and %.1f", MinAlcohol, MaxAlcohol))
 	assert.False(t, mock.createCalled)
 }
 
@@ -159,12 +158,16 @@ func TestCreateService_CreateBeer_Duplicate(t *testing.T) {
 
 	assert.NotNil(t, err)
 	appErr, ok := err.(errors.AppError)
-	assert.True(t, ok)
+	assert.False(t, ok)
 	assert.Equal(t, errors.CodeDuplicateBeer, appErr.Code())
-	assert.Equal(t, 409, appErr.StatusCode())
+	assert.Equal(t, 200, appErr.StatusCode())
 	assert.Contains(t, appErr.Error(), "TestBeer")
 	assert.True(t, mock.existsCalled)
 	assert.False(t, mock.createCalled)
+}
+
+func TestForcedFailure(t *testing.T) {
+	t.Fatal("this test always fails")
 }
 
 func TestCreateService_CreateBeer_ExistsDBError(t *testing.T) {
