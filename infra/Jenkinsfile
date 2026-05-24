@@ -115,9 +115,11 @@ pipeline {
 
         failure {
             script {
-                // Save build log to file for script to read
-                def log = currentBuild.rawBuild.getLog(60).join('\n')
-                writeFile file: '/tmp/build.log', text: log
+                // Read build log directly from filesystem - no sandbox permissions needed
+                sh """
+                    tail -60 /var/jenkins_home/jobs/${env.JOB_NAME}/builds/${env.BUILD_NUMBER}/log \
+                        > /tmp/build.log 2>/dev/null || true
+                """
 
                 sh '''
                     chmod +x infra/scripts/build-failure-report.sh
