@@ -1,8 +1,9 @@
 pipeline {
     agent any
 
-    triggers{
+    triggers {
         cron('H * * * *')
+        githubPush()
     }
 
     environment {
@@ -73,7 +74,6 @@ pipeline {
             }
             post {
                 always {
-                    // Parse Newman results and append to metrics file
                     sh '''
                         chmod +x infra/scripts/newman/newman-report.sh
                         ./infra/scripts/newman/newman-report.sh
@@ -86,17 +86,14 @@ pipeline {
     }
 
     post {
-        always {
+        success {
             script {
-                // Orchestrate full HTML report from sonar and newman metrics
                 sh '''
                     chmod +x infra/scripts/build-report.sh
                     ./infra/scripts/build-report.sh
                 '''
 
-                // Read rendered report and inject Jenkins build variables
                 def html = readFile('/tmp/email-report-rendered.html')
-
                 html = html.replace('${BUILD_RESULT}',    currentBuild.currentResult   ?: 'UNKNOWN')
                 html = html.replace('${BUILD_DURATION}',  currentBuild.durationString  ?: 'N/A')
                 html = html.replace('${BRANCH_NAME}',     env.BRANCH_NAME              ?: 'main')
@@ -107,10 +104,38 @@ pipeline {
                 html = html.replace('${SONAR_URL}',       'http://localhost:9000')
                 html = html.replace('${BUILD_TIMESTAMP}', new Date().toString())
 
-                // Send email with full metrics report
                 emailext(
                     to:       'dvddavid677@gmail.com',
-                    subject:  "[Jenkins] ${currentBuild.currentResult}: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    subject:  "[Jenkins] SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    mimeType: 'text/html',
+                    body:     html
+                )
+            }
+        }
+
+        failure {
+            script {
+                // Save build log to file for script to read
+                def log = currentBuild.rawBuild.getLog(60).join('\n')
+                writeFile file: '/tmp/build.log', text: log
+
+                sh '''
+                    chmod +x infra/scripts/build-failure-report.sh
+                    ./infra/scripts/build-failure-report.sh
+                '''
+
+                def html = readFile('/tmp/email-failure-rendered.html')
+                html = html.replace('${BUILD_DURATION}',  currentBuild.durationString  ?: 'N/A')
+                html = html.replace('${BRANCH_NAME}',     env.BRANCH_NAME              ?: 'main')
+                html = html.replace('${JOB_NAME}',        env.JOB_NAME                 ?: 'GoBrew')
+                html = html.replace('${BUILD_NUMBER}',    env.BUILD_NUMBER             ?: '0')
+                html = html.replace('${BUILD_URL}',       env.BUILD_URL                ?: '#')
+                html = html.replace('${GIT_COMMIT}',      (env.GIT_COMMIT ?: 'unknown').take(7))
+                html = html.replace('${BUILD_TIMESTAMP}', new Date().toString())
+
+                emailext(
+                    to:       'dvddavid677@gmail.com',
+                    subject:  "[Jenkins] FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     mimeType: 'text/html',
                     body:     html
                 )

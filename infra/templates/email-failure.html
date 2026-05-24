@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GoBrew CI Report - Failure</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#0d1117; font-family:Arial, Helvetica, sans-serif; color:#c9d1d9;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td align="center" style="padding:24px 16px;">
+
+                <!-- Container -->
+                <table width="660" cellpadding="0" cellspacing="0" border="0"
+                    style="background-color:#161b22; border:1px solid #30363d;">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color:#3d0f0f; padding:28px 32px; border-bottom:1px solid #f85149;">
+                            <p
+                                style="margin:0; font-size:11px; color:#8b949e; letter-spacing:1px; text-transform:uppercase;">
+                                GoBrew CI Pipeline</p>
+                            <h1 style="margin:6px 0 0; font-size:20px; font-weight:700; color:#f0f6fc;">${JOB_NAME}
+                                &nbsp;#${BUILD_NUMBER}</h1>
+                            <p
+                                style="margin:10px 0 0; display:inline-block; padding:4px 14px; background-color:#f85149; color:#ffffff; font-size:12px; font-weight:600; border:1px solid #f85149;">
+                                FAILURE &nbsp;&middot;&nbsp; ${BRANCH_NAME} &nbsp;&middot;&nbsp; ${BUILD_DURATION}</p>
+                        </td>
+                    </tr>
+
+                    <!-- Build info -->
+                    <tr>
+                        <td style="padding:24px 32px; border-bottom:1px solid #21262d;">
+                            <p
+                                style="margin:0 0 12px; font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#8b949e;">
+                                Build Info</p>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td width="80" style="padding:6px 0; font-size:12px; color:#8b949e;">Commit</td>
+                                    <td
+                                        style="padding:6px 0; font-size:12px; color:#e6edf3; font-family:'Courier New', monospace;">
+                                        ${GIT_COMMIT}</td>
+                                </tr>
+                                <tr>
+                                    <td width="80"
+                                        style="padding:6px 0; font-size:12px; color:#8b949e; border-top:1px solid #21262d;">
+                                        Branch</td>
+                                    <td
+                                        style="padding:6px 0; font-size:12px; color:#e6edf3; border-top:1px solid #21262d;">
+                                        ${BRANCH_NAME}</td>
+                                </tr>
+                                <tr>
+                                    <td width="80"
+                                        style="padding:6px 0; font-size:12px; color:#8b949e; border-top:1px solid #21262d;">
+                                        Duration</td>
+                                    <td
+                                        style="padding:6px 0; font-size:12px; color:#e6edf3; border-top:1px solid #21262d;">
+                                        ${BUILD_DURATION}</td>
+                                </tr>
+                                <tr>
+                                    <td width="80"
+                                        style="padding:6px 0; font-size:12px; color:#8b949e; border-top:1px solid #21262d;">
+                                        URL</td>
+                                    <td style="padding:6px 0; font-size:12px; border-top:1px solid #21262d;"><a
+                                            href="${BUILD_URL}" style="color:#38bdf8; text-decoration:none;">View build
+                                            &rarr;</a></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Failed stage -->
+                    <tr>
+                        <td style="padding:24px 32px; border-bottom:1px solid #21262d;">
+                            <p
+                                style="margin:0 0 12px; font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#8b949e;">
+                                Failed Stage</p>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td width="80" style="padding:6px 0; font-size:12px; color:#8b949e;">Stage</td>
+                                    <td style="padding:6px 0; font-size:12px; color:#f85149; font-weight:600;">
+                                        ${FAILED_STAGE}</td>
+                                </tr>
+                                <tr>
+                                    <td width="80"
+                                        style="padding:6px 0; font-size:12px; color:#8b949e; border-top:1px solid #21262d;">
+                                        Cause</td>
+                                    <td
+                                        style="padding:6px 0; font-size:12px; color:#e6edf3; border-top:1px solid #21262d;">
+                                        ${FAILURE_CAUSE}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Error trace -->
+                    <tr>
+                        <td style="padding:24px 32px; border-bottom:1px solid #21262d;">
+                            <p
+                                style="margin:0 0 12px; font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#8b949e;">
+                                Error Trace</p>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td
+                                        style="padding:14px 16px; background-color:#0d1117; border:1px solid #f85149; border-left:3px solid #f85149;">
+                                        <pre
+                                            style="margin:0; font-size:11px; color:#f85149; font-family:'Courier New', monospace; white-space:pre-wrap; word-break:break-all; line-height:1.6;">${BUILD_LOG}</pre>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Pipeline status -->
+                    <tr>
+                        <td style="padding:24px 32px; border-bottom:1px solid #21262d;">
+                            <p
+                                style="margin:0 0 16px; font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#8b949e;">
+                                Pipeline Status</p>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
+                                <tr>
+                                    <td width="34%"
+                                        style="padding:6px 8px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
+                                        Stage</td>
+                                    <td width="33%" align="center"
+                                        style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
+                                        Status</td>
+                                    <td width="33%" align="center"
+                                        style="padding:6px 4px; font-size:10px; color:#8b949e; background-color:#0d1117; border:1px solid #21262d;">
+                                        Result</td>
+                                </tr>
+                            </table>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
+                                <tr style="background-color:#0d1117;">
+                                    <td width="34%"
+                                        style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
+                                        Test Coverage</td>
+                                    <td width="33%" align="center"
+                                        style="padding:10px 4px; font-size:12px; border:1px solid #21262d; color:#e6edf3;">
+                                        ${STAGE_COVERAGE_STATUS}</td>
+                                    <td width="33%" align="center"
+                                        style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:${STAGE_COVERAGE_COLOR};">
+                                        ${STAGE_COVERAGE_RESULT}</td>
+                                </tr>
+                            </table>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
+                                <tr style="background-color:#0d1117;">
+                                    <td width="34%"
+                                        style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
+                                        SonarQube Analysis</td>
+                                    <td width="33%" align="center"
+                                        style="padding:10px 4px; font-size:12px; border:1px solid #21262d; color:#e6edf3;">
+                                        ${STAGE_SONAR_STATUS}</td>
+                                    <td width="33%" align="center"
+                                        style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:${STAGE_SONAR_COLOR};">
+                                        ${STAGE_SONAR_RESULT}</td>
+                                </tr>
+                            </table>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
+                                <tr style="background-color:#0d1117;">
+                                    <td width="34%"
+                                        style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
+                                        Quality Gate</td>
+                                    <td width="33%" align="center"
+                                        style="padding:10px 4px; font-size:12px; border:1px solid #21262d; color:#e6edf3;">
+                                        ${STAGE_GATE_STATUS}</td>
+                                    <td width="33%" align="center"
+                                        style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:${STAGE_GATE_COLOR};">
+                                        ${STAGE_GATE_RESULT}</td>
+                                </tr>
+                            </table>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:2px;">
+                                <tr style="background-color:#0d1117;">
+                                    <td width="34%"
+                                        style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
+                                        Fetch Metrics</td>
+                                    <td width="33%" align="center"
+                                        style="padding:10px 4px; font-size:12px; border:1px solid #21262d; color:#e6edf3;">
+                                        ${STAGE_METRICS_STATUS}</td>
+                                    <td width="33%" align="center"
+                                        style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:${STAGE_METRICS_COLOR};">
+                                        ${STAGE_METRICS_RESULT}</td>
+                                </tr>
+                            </table>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr style="background-color:#0d1117;">
+                                    <td width="34%"
+                                        style="padding:10px 8px; font-size:12px; color:#38bdf8; font-family:'Courier New', monospace; border:1px solid #21262d;">
+                                        Black-box Tests</td>
+                                    <td width="33%" align="center"
+                                        style="padding:10px 4px; font-size:12px; border:1px solid #21262d; color:#e6edf3;">
+                                        ${STAGE_NEWMAN_STATUS}</td>
+                                    <td width="33%" align="center"
+                                        style="padding:10px 4px; font-size:11px; font-weight:600; border:1px solid #21262d; color:${STAGE_NEWMAN_COLOR};">
+                                        ${STAGE_NEWMAN_RESULT}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Actions -->
+                    <tr>
+                        <td style="padding:20px 32px; border-bottom:1px solid #21262d;">
+                            <a href="${BUILD_URL}console"
+                                style="display:inline-block; padding:9px 18px; background-color:#f85149; color:#ffffff; font-size:12px; font-weight:600; text-decoration:none; margin-right:10px;">View
+                                Full Log</a>
+                            <a href="${BUILD_URL}"
+                                style="display:inline-block; padding:9px 18px; background-color:#21262d; color:#c9d1d9; font-size:12px; font-weight:600; text-decoration:none; border:1px solid #30363d;">Build
+                                Details</a>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td
+                            style="padding:16px 32px; background-color:#0d1117; border-top:1px solid #21262d; text-align:center;">
+                            <p style="margin:0; font-size:11px; color:#8b949e;">Generated by Jenkins &middot; GoBrew CI
+                                Pipeline &middot; ${BUILD_TIMESTAMP}</p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+</html>

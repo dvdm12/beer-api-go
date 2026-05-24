@@ -4,6 +4,7 @@
 # Generates coverage.out required by sonar-analysis.sh.
 # Counts passing tests per service and writes to /tmp/sonar-metrics.env.
 # Only covers business logic packages: controllers, services, repository.
+# Exits with code 1 if any unit test fails, aborting the pipeline.
 
 set -e
 
@@ -31,27 +32,27 @@ for svc in $SERVICES; do
         | tr '[:lower:]' '[:upper:]')
 
     # Run tests with JSON output and coverage profile
-    if go test $TEST_PACKAGES \
+    # Any test failure exits immediately and aborts the pipeline
+    if ! go test $TEST_PACKAGES \
         -coverprofile=coverage.out \
         -covermode=atomic \
-        -json > test-report.json 2>/dev/null; then
+        -json > test-report.json 2>&1; then
 
-        echo "[coverage] OK - coverage.out generated for ${svc}"
-
-        # Print total coverage summary
-        go tool cover -func=coverage.out | grep "^total:" | awk '{print "[coverage] Total:", $3}'
-
-        # Count passing tests from JSON report
-        TEST_COUNT=$(grep '"Action":"pass"' test-report.json \
-            | grep '"Test"' \
-            | wc -l \
-            | awk '{print $1}')
-    else
-        # Tests failed but do not block the pipeline
-        echo "[coverage] WARN - tests failed or no test files found in ${svc}"
-        touch coverage.out
-        TEST_COUNT=0
+        echo "[coverage] ERROR - unit tests failed in ${svc}"
+        grep '"Action":"fail"' test-report.json | grep '"Test"' || true
+        exit 1
     fi
+
+    echo "[coverage] OK - coverage.out generated for ${svc}"
+
+    # Print total coverage summary
+    go tool cover -func=coverage.out | grep "^total:" | awk '{print "[coverage] Total:", $3}'
+
+    # Count passing tests from JSON report
+    TEST_COUNT=$(grep '"Action":"pass"' test-report.json \
+        | grep '"Test"' \
+        | wc -l \
+        | awk '{print $1}')
 
     echo "[coverage] Tests passed: ${TEST_COUNT} for ${svc}"
 

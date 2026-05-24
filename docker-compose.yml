@@ -8,6 +8,7 @@ x-service-base: &service-base
       condition: service_healthy
 
 services:
+
   mongodb:
     image: mongo:7
     container_name: mongodb
@@ -58,6 +59,20 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok
+    restart: unless-stopped
+    networks:
+      - beer-network
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command: http jenkins:8080
+    ports:
+      - "4040:4040"
+    depends_on:
+      - jenkins
 
   create-service:
     <<: *service-base
