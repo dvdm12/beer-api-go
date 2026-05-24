@@ -166,10 +166,6 @@ func TestCreateService_CreateBeer_Duplicate(t *testing.T) {
 	assert.False(t, mock.createCalled)
 }
 
-func TestForcedFailure(t *testing.T) {
-	t.Fatal("this test always fails")
-}
-
 func TestCreateService_CreateBeer_ExistsDBError(t *testing.T) {
 	mock := &mockRepo{existsErr: fmt.Errorf("mongo connection lost")}
 	service := NewCreateService(mock)
