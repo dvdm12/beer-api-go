@@ -180,10 +180,6 @@ func TestCreateService_CreateBeer_ExistsDBError(t *testing.T) {
 	assert.False(t, mock.createCalled)
 }
 
-func TestFake(t *testing.T) {
-	t.Fatal("force failure")
-}
-
 func TestCreateService_CreateBeer_InsertDBError(t *testing.T) {
 	mock := &mockRepo{createErr: fmt.Errorf("mongo write failed")}
 	service := NewCreateService(mock)
