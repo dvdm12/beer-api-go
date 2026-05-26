@@ -11,6 +11,8 @@ import (
 
 func main() {
 
+	//read-service
+
 	collection := db.Connect()
 
 	repo := repository.NewReadRepository(collection)

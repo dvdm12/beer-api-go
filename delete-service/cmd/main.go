@@ -11,6 +11,8 @@ import (
 
 func main() {
 
+	//delete-serivce
+
 	collection := db.Connect()
 
 	repo := repository.NewDeleteRepository(collection)
@@ -20,7 +22,7 @@ func main() {
 	r := gin.Default()
 
 	r.GET("/health", func(c *gin.Context) {
-    	c.JSON(200, gin.H{"status": "ok"})
+		c.JSON(200, gin.H{"status": "ok"})
 	})
 
 	r.DELETE("/beers/:id", controller.DeleteBeer)

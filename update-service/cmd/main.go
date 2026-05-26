@@ -11,6 +11,8 @@ import (
 
 func main() {
 
+	//update-service
+
 	collection := db.Connect()
 
 	repo := repository.NewUpdateRepository(collection)
