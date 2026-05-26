@@ -11,8 +11,6 @@ import (
 
 func main() {
 
-	//data-analysis
-
 	collection := db.Connect()
 	repo := repository.NewAnalysisRepository(collection, nil)
 	service := services.NewAnalysisService(repo)

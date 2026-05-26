@@ -11,8 +11,6 @@ import (
 
 func main() {
 
-	//delete-serivce
-
 	collection := db.Connect()
 
 	repo := repository.NewDeleteRepository(collection)
