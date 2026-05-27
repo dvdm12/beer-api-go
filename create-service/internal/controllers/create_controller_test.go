@@ -66,6 +66,10 @@ func validBeer() models.Beer {
 	}
 }
 
+func TestFail(t *testing.T) {
+	t.Fail()
+}
+
 func TestCreateController_CreateBeer_Success(t *testing.T) {
 	mock := &mockService{}
 	r := setupRouter(mock)
