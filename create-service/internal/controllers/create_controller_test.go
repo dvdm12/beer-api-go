@@ -74,7 +74,7 @@ func TestCreateController_CreateBeer_Success(t *testing.T) {
 	resp := parseResponse(w)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.False(t, mock.called)
+	assert.True(t, mock.called)
 	assert.Equal(t, "Beer has been created successfully", resp["message"]) // ← mensaje correcto
 }
 

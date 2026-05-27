@@ -31,7 +31,7 @@ func (c *CreateController) CreateBeer(ctx *gin.Context) {
 		return
 	}
 
-	// Execute business logic......
+	// Execute business logic.
 	if err := c.service.CreateBeer(beer); err != nil {
 		appErr, _ := errors.FromError(err)
 		ctx.JSON(appErr.StatusCode(), errorResponse(appErr))
